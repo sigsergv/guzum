@@ -1,0 +1,10 @@
+syntax: glob
+moc_*.cpp
+qrc_*.cpp
+*.a
+*.o
+*.qm
+src/ui_*.h
+Makefile
+
+./guzum

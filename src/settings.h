@@ -1,0 +1,32 @@
+/*
+ * settings.h
+ *
+ * Created on: Apr 19, 2012
+ * Author: Sergei Stolyarov
+ */
+#ifndef SETTINGS_H_
+#define SETTINGS_H_
+
+#include <QString>
+#include <QChar>
+#include <QList>
+
+struct QSettings;
+struct QWidget;
+
+namespace Guzum
+{
+namespace Config
+{
+    QSettings * settings();
+    QString version();
+    QString uiLang();
+    QString uiLangsPath();
+    QString profilePath();
+    QString filenameInProfile(const QString & filename);
+    QString extUrlNamespace();
+}
+}
+
+#endif /* SETTINGS_H_ */
+
