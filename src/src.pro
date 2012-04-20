@@ -1,4 +1,5 @@
 DEFINES += GUZUM_VERSION="\\\"1.0.0\\\""
+DEFINES += _FILE_OFFSET_BITS="64"
 
 HEADERS += settings.h \
     encryptedtextwindow.h \

@@ -111,8 +111,13 @@ void EncryptedTextWindow::show()
             qDebug() << "GPG_ERR_BAD_PASSPHRASE";
             break;
 
+        case GPG_ERR_CANCELED:
+            qDebug() << "passphrase input has been canceled";
+            break;
+
         default:
-            qDebug() << "Other decryption error";
+            qDebug() << "Other decryption error: " << gpg->error();
+            qDebug() << "GPG_ERR_SYSTEM_ERROR" << GPG_ERR_SYSTEM_ERROR;
         }
     }
 }

@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QInputDialog>
 #include <locale.h>
+#include <unistd.h>
 
 #include "gpgmewrapper.h"
 
@@ -40,6 +41,15 @@ gpgme_error_t passphraseCallback(void * hook, const char * uid_hint,
 {
     bool bOk = false;
     QString pass = QInputDialog::getText(0, "ENTER PASSPHRASE", "label", QLineEdit::Password, "", &bOk);
+    if (!bOk) {
+        return GPG_ERR_CANCELED;
+    }
+
+    pass += "\n";
+    QByteArray passBytes = pass.toAscii();
+    write(fd, passBytes.constData(), passBytes.size());
+
+    return GPG_ERR_NO_ERROR;
 }
 
 GPGME_Error GPGME::init()
@@ -88,7 +98,10 @@ GPGME_Error GPGME::init()
             engineInfo->file_name, gpgHome.canonicalPath().toAscii());
     */
     err = gpgme_ctx_set_engine_info(context, GPGME_PROTOCOL_OpenPGP, 
-            engineInfo->file_name, engineInfo->home_dir);
+            engineInfo->file_name,
+            //engineInfo->home_dir
+            "./test-gpg"
+            );
     if (err != GPG_ERR_NO_ERROR) {
         return err;
     }
@@ -146,6 +159,28 @@ void GPGME::decryptFile(const QString & filename)
         setError(err);
         return;
     }
+
+    // decryption is successful so load plain data
+    QByteArray resBytes;
+    const int bufSize = 1000;
+    int read;
+    char buf[bufSize];
+
+    gpgme_data_rewind(plain);
+    while (true) {
+        read = gpgme_data_read(plain, (void*)buf, bufSize);
+        if (read == 0) {
+            break;
+        }
+        if (read == -1) {
+            // error, ignore for now
+            break;
+        }
+        qDebug() << "reading plain data";
+        resBytes.append(buf, read);
+    }
+
+    qDebug() << resBytes;
 }
 
 GPGME * GPGME::instance()
