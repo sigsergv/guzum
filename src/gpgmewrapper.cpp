@@ -7,6 +7,7 @@
 
 #include <QtDebug>
 #include <QDir>
+#include <QInputDialog>
 #include <locale.h>
 
 #include "gpgmewrapper.h"
@@ -32,6 +33,14 @@ GPGME::~GPGME()
 }
 
 GPGME * GPGME::inst = 0;
+
+// passphrase callback
+gpgme_error_t passphraseCallback(void * hook, const char * uid_hint, 
+        const char * passphrase_info, int prev_was_bad, int fd)
+{
+    bool bOk = false;
+    QString pass = QInputDialog::getText(0, "ENTER PASSPHRASE", "label", QLineEdit::Password, "", &bOk);
+}
 
 GPGME_Error GPGME::init()
 {
@@ -84,6 +93,8 @@ GPGME_Error GPGME::init()
         return err;
     }
 
+    gpgme_set_passphrase_cb(context, passphraseCallback, 0);
+
     inst = new GPGME(context);
     qDebug() << "gpgme initalized";
 
@@ -92,13 +103,14 @@ GPGME_Error GPGME::init()
 
 GPGME_Error GPGME::error()
 {
-    return p->error;
+    return gpg_err_code(p->error);
 }
 
 void GPGME::setError(GPGME_Error error)
 {
     p->error = error;
 }
+
 
 void GPGME::decryptFile(const QString & filename)
 {
@@ -126,9 +138,11 @@ void GPGME::decryptFile(const QString & filename)
 
     // process data (it's cipher)
     gpgme_data_t plain;
+    gpgme_data_new (&plain);
     err = gpgme_op_decrypt(p->context, data, plain);
-    qDebug() << err << GPG_ERR_INV_VALUE;
     if (err != GPG_ERR_NO_ERROR) {
+        gpgme_data_release(data);
+        gpgme_data_release(plain);
         setError(err);
         return;
     }
