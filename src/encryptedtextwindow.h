@@ -21,6 +21,12 @@ public:
 private:
     struct Private;
     Private * p;
+
+protected:
+    void rememberGeometryAndState();
+    void moveEvent(QMoveEvent * event);
+    void resizeEvent(QResizeEvent * event);
+    void closeEvent(QCloseEvent * event);
 };
 
 #endif // _ENCRYPTEDTEXTWINDOW_H_
