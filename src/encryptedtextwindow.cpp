@@ -16,6 +16,8 @@ struct EncryptedTextWindow::Private
 {
     QString filename;
     QString filenameHash;
+    QPlainTextEdit * editor;
+    QToolBar * topToolBar;
 };
 
 
@@ -32,9 +34,35 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     h.addData(utfData.constData(), utfData.length());
     p->filenameHash = h.result().toHex();
 
-    qDebug() << p->filenameHash;
-
     QSettings * settings = Guzum::Config::settings();
+
+    // create actions
+    QAction * quitAction = new QAction(tr("&Quit"), this);
+    QAction * aboutAction = new QAction(tr("&About Guzum"), this);
+
+    // connect signals
+    connect(quitAction, SIGNAL(triggered()),
+            this, SLOT(close()));
+    connect(aboutAction, SIGNAL(triggered()),
+            this, SLOT(showAboutDialog()));
+
+    // add basic control elements: top toolbar (fixed, not movable/resizeable), buttons on that toolbar, mainmenu
+    QMenu * fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(quitAction);
+    QMenu * helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAction);
+
+    // create widgets
+    p->editor = new QPlainTextEdit(this);
+    //layout()->addWidget(p->editor);
+    setCentralWidget(p->editor);
+    setFocusProxy(p->editor);
+
+    p->topToolBar = new QToolBar(this);
+    p->topToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    p->topToolBar->setMovable(false);
+    p->topToolBar->setObjectName("MainToolbar");
+    addToolBar(p->topToolBar);
     
     // try to restore window settings
     settings->beginGroup("Windows");
@@ -44,12 +72,28 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     key = QString("%1-state").arg(p->filenameHash);
     restoreState(settings->value(key).toByteArray());
     settings->endGroup();
-    
 }
 
 EncryptedTextWindow::~EncryptedTextWindow()
 {
     delete p;
+}
+
+void EncryptedTextWindow::close()
+{
+    QMainWindow::close();
+}
+
+void EncryptedTextWindow::show()
+{
+    QMainWindow::show();
+
+    // now try to decrypt and load data from the file
+}
+
+void EncryptedTextWindow::showAboutDialog()
+{
+    qDebug() << "showAboutDialog()";
 }
 
 void EncryptedTextWindow::rememberGeometryAndState()

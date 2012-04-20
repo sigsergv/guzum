@@ -14,6 +14,7 @@ struct QString;
 
 class EncryptedTextWindow : public QMainWindow
 {
+    Q_OBJECT
 public:
     EncryptedTextWindow(const QString & filename, QWidget * parent = 0);
     ~EncryptedTextWindow();
@@ -21,6 +22,13 @@ public:
 private:
     struct Private;
     Private * p;
+
+public slots:
+    void close();
+    void show();
+
+protected slots:
+    void showAboutDialog();
 
 protected:
     void rememberGeometryAndState();
