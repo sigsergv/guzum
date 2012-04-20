@@ -39,7 +39,7 @@ if len(argv) != 2:
     exit(1)
 
 basename = argv[1]
-mo = re.match("^[0-9a-z]+$", basename)
+mo = re.match("^[0-9a-z_-]+$", basename)
 if mo is None:
     print "Invalid BASENAME"
     exit(1)

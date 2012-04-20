@@ -14,6 +14,7 @@
 
 #include "settings.h"
 #include "encryptedtextwindow.h"
+#include "gpgmewrapper.h"
 
 int main(int argv, char *_args[])
 {
@@ -50,19 +51,31 @@ int main(int argv, char *_args[])
             // treat args[1] as a filename
             // we need to check is file exists and create viewer window
             qDebug() << "load file contents mode";
-            QFileInfo f(args[1]);
-            if (!f.exists()) {
+            QFileInfo fi(args[1]);
+            if (!fi.exists()) {
                 QMessageBox::critical(0, EncryptedTextWindow::tr("Error"), 
                         EncryptedTextWindow::tr("File `%1' not found").arg(args[1]));
                 return 1;
             }
-            QString filename = f.canonicalFilePath();
-            qDebug() << filename;
+            // also check file size
+            if (fi.size() > 1024*1024) { // 1M
+                QMessageBox::critical(0, EncryptedTextWindow::tr("Error"), 
+                        EncryptedTextWindow::tr("File `%1' is too large to open.").arg(args[1]));
+                return 1;
+            }
+            QString filename = fi.canonicalFilePath();
             textWindow = new EncryptedTextWindow(filename);
         }
     }
 
     if (textWindow) {
+        // init gpgme
+        GPGME_Error err = GPGME::init();
+        if (err != GPG_ERR_NO_ERROR) {
+            QMessageBox::critical(0, EncryptedTextWindow::tr("Error"),
+                    EncryptedTextWindow::tr("Cannot initialize GPG backend"));
+            return 1;
+        }
         QApplication::setActiveWindow(textWindow);
         textWindow->show();
     }

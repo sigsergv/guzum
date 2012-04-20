@@ -11,6 +11,7 @@
 
 #include "encryptedtextwindow.h"
 #include "settings.h"
+#include "gpgmewrapper.h"
 
 struct EncryptedTextWindow::Private
 {
@@ -89,6 +90,31 @@ void EncryptedTextWindow::show()
     QMainWindow::show();
 
     // now try to decrypt and load data from the file
+    GPGME * gpg = GPGME::instance();
+    gpg->decryptFile(p->filename);
+    if (gpg->error() != GPG_ERR_NO_ERROR) {
+        // failed to decrypt file
+        switch (gpg->error()) {
+        case GPG_ERR_INV_VALUE:
+            qDebug() << "GPG_ERR_INV_VALUE";
+            break;
+
+        case GPG_ERR_NO_DATA:
+            qDebug() << "GPG_ERR_NO_DATA";
+            break;
+
+        case GPG_ERR_DECRYPT_FAILED:
+            qDebug() << "GPG_ERR_DECRYPT_FAILED";
+            break;
+
+        case GPG_ERR_BAD_PASSPHRASE:
+            qDebug() << "GPG_ERR_BAD_PASSPHRASE";
+            break;
+
+        default:
+            qDebug() << "Other decryption error";
+        }
+    }
 }
 
 void EncryptedTextWindow::showAboutDialog()

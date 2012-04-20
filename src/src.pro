@@ -1,11 +1,13 @@
 DEFINES += GUZUM_VERSION="\\\"1.0.0\\\""
 
 HEADERS += settings.h \
-    encryptedtextwindow.h
+    encryptedtextwindow.h \
+    gpgmewrapper.h
 
 SOURCES += main.cpp \
     settings.cpp \
-    encryptedtextwindow.cpp
+    encryptedtextwindow.cpp \
+    gpgmewrapper.cpp
 
 FORMS += 
 
@@ -17,6 +19,8 @@ QT += xml sql network webkit
 RESOURCES = ../resources/application.qrc
 TARGET = guzum
 DESTDIR = ../
+
+LIBS += -lgpgme
 
 unix {
     #VARIABLES
