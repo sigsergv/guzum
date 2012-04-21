@@ -125,7 +125,7 @@ void GPGME::setError(GPGME_Error error)
 }
 
 
-void GPGME::decryptFile(const QString & filename)
+QByteArray GPGME::decryptFile(const QString & filename)
 {
     setError(GPG_ERR_NO_ERROR); // clear error
 
@@ -136,17 +136,17 @@ void GPGME::decryptFile(const QString & filename)
     QFile file(filename);
     if (!file.exists()) {
         setError(GPGME_WRAPPER_ERR_FILE_NOT_FOUND);
-        return;
+        return QByteArray();
     }
     if (!file.open(QIODevice::ReadOnly)) {
         setError(GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE);
-        return;
+        return QByteArray();
     }
 
     err = gpgme_data_new_from_fd(&data, file.handle());
     if (err != GPG_ERR_NO_ERROR) {
         setError(err);
-        return;
+        return QByteArray();
     }
 
     // process data (it's cipher)
@@ -157,7 +157,7 @@ void GPGME::decryptFile(const QString & filename)
         gpgme_data_release(data);
         gpgme_data_release(plain);
         setError(err);
-        return;
+        return QByteArray();
     }
 
     // decryption is successful so load plain data
@@ -176,11 +176,10 @@ void GPGME::decryptFile(const QString & filename)
             // error, ignore for now
             break;
         }
-        qDebug() << "reading plain data";
         resBytes.append(buf, read);
     }
 
-    qDebug() << resBytes;
+    return resBytes;
 }
 
 GPGME * GPGME::instance()

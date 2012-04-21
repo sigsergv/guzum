@@ -91,7 +91,7 @@ void EncryptedTextWindow::show()
 
     // now try to decrypt and load data from the file
     GPGME * gpg = GPGME::instance();
-    gpg->decryptFile(p->filename);
+    QByteArray decrypted = gpg->decryptFile(p->filename);
     if (gpg->error() != GPG_ERR_NO_ERROR) {
         // failed to decrypt file
         switch (gpg->error()) {
@@ -119,6 +119,11 @@ void EncryptedTextWindow::show()
             qDebug() << "Other decryption error: " << gpg->error();
             qDebug() << "GPG_ERR_SYSTEM_ERROR" << GPG_ERR_SYSTEM_ERROR;
         }
+    } else {
+        // load data into the editor
+        // TODO: guess encoding? Assume it's UTF-8 for now
+        QString contents = QString::fromUtf8(decrypted.constData());
+        p->editor->setPlainText(contents);
     }
 }
 

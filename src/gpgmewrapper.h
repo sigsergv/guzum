@@ -26,7 +26,7 @@ public:
     static GPGME_Error init();
     GPGME_Error error();
 
-    void decryptFile(const QString & filename);
+    QByteArray decryptFile(const QString & filename);
     
 private:
     GPGME(gpgme_ctx_t context);

@@ -24,3 +24,20 @@ with some command line option, like:
     guzum --tray
 
 this will open application as a tray icon.
+
+Internal scenarious and requirements
+====================================
+
+Opening encrypted file
+----------------------
+
+* detect is file is really GPG-encrypted file
+* extract and remember key ID that is used for decryption (and use to encrypt file after modifications)
+* do NOT save decrypted data anywhere on the disk
+* do NOT open non-encrypted files with extensions gpg/asc
+
+Opening nonexisting encrypted file
+----------------------------------
+
+* if user tries to open nonexisting gpg/asc file assume he wants to encrypt it using his own secret key
+
