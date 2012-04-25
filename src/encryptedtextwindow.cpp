@@ -91,7 +91,7 @@ void EncryptedTextWindow::show()
 
     // now try to decrypt and load data from the file
     GPGME * gpg = GPGME::instance();
-    QByteArray decrypted = gpg->decryptFile(p->filename);
+    QByteArray decrypted = gpg->decryptFile(p->filename, this);
     if (gpg->error() != GPG_ERR_NO_ERROR) {
         // failed to decrypt file
         switch (gpg->error()) {

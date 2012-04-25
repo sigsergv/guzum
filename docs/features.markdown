@@ -35,6 +35,7 @@ Opening encrypted file
 * extract and remember key ID that is used for decryption (and use to encrypt file after modifications)
 * do NOT save decrypted data anywhere on the disk
 * do NOT open non-encrypted files with extensions gpg/asc
+* automatically detect charset
 
 Opening nonexisting encrypted file
 ----------------------------------

@@ -19,6 +19,7 @@ typedef enum {
 } GPGME_Wrapper_Errors;
 
 struct QString;
+struct QWidget;
 
 class GPGME {
 public:
@@ -26,7 +27,8 @@ public:
     static GPGME_Error init();
     GPGME_Error error();
 
-    QByteArray decryptFile(const QString & filename);
+
+    QByteArray decryptFile(const QString & filename, QWidget * parent = 0);
     
 private:
     GPGME(gpgme_ctx_t context);

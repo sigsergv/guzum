@@ -3,14 +3,16 @@ DEFINES += _FILE_OFFSET_BITS="64"
 
 HEADERS += settings.h \
     encryptedtextwindow.h \
-    gpgmewrapper.h
+    gpgmewrapper.h \
+    passphrasedialog.h
 
 SOURCES += main.cpp \
     settings.cpp \
     encryptedtextwindow.cpp \
-    gpgmewrapper.cpp
+    gpgmewrapper.cpp \
+    passphrasedialog.cpp
 
-FORMS += 
+FORMS += passphrasedialog.ui
 
 CODECFORTR = UTF-8
 TRANSLATIONS = ../translations/guzum_ru.ts

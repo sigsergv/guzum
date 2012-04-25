@@ -12,8 +12,13 @@
 #include <unistd.h>
 
 #include "gpgmewrapper.h"
+#include "passphrasedialog.h"
 
 gpgme_ctx_t context;
+
+struct CallbackData {
+    QWidget * parent;
+};
 
 struct GPGME::Private
 {
@@ -39,16 +44,21 @@ GPGME * GPGME::inst = 0;
 gpgme_error_t passphraseCallback(void * hook, const char * uid_hint, 
         const char * passphrase_info, int prev_was_bad, int fd)
 {
-    bool bOk = false;
-    QString pass = QInputDialog::getText(0, "ENTER PASSPHRASE", "label", QLineEdit::Password, "", &bOk);
-    if (!bOk) {
+    Q_UNUSED(passphrase_info);
+
+    CallbackData * cbData = static_cast<CallbackData *>(hook);
+    PassphraseDialog passDlg(cbData->parent);
+    passDlg.setUid(uid_hint);
+    if (prev_was_bad) {
+        passDlg.triggerErrorLabel();
+    }
+    if (passDlg.exec() == QDialog::Rejected) {
         return GPG_ERR_CANCELED;
     }
 
-    pass += "\n";
+    QString pass = passDlg.passphrase() + "\n";
     QByteArray passBytes = pass.toAscii();
     write(fd, passBytes.constData(), passBytes.size());
-
     return GPG_ERR_NO_ERROR;
 }
 
@@ -106,8 +116,6 @@ GPGME_Error GPGME::init()
         return err;
     }
 
-    gpgme_set_passphrase_cb(context, passphraseCallback, 0);
-
     inst = new GPGME(context);
     qDebug() << "gpgme initalized";
 
@@ -125,9 +133,13 @@ void GPGME::setError(GPGME_Error error)
 }
 
 
-QByteArray GPGME::decryptFile(const QString & filename)
+QByteArray GPGME::decryptFile(const QString & filename, QWidget * parent)
 {
     setError(GPG_ERR_NO_ERROR); // clear error
+    CallbackData cbData;
+    cbData.parent = parent;
+
+    gpgme_set_passphrase_cb(p->context, passphraseCallback, &cbData);
 
     qDebug() << "decrypting file" << filename;
     gpgme_data_t data;
@@ -153,6 +165,8 @@ QByteArray GPGME::decryptFile(const QString & filename)
     gpgme_data_t plain;
     gpgme_data_new (&plain);
     err = gpgme_op_decrypt(p->context, data, plain);
+    // unset passphrase callback
+    gpgme_set_passphrase_cb(p->context, 0, 0);
     if (err != GPG_ERR_NO_ERROR) {
         gpgme_data_release(data);
         gpgme_data_release(plain);
