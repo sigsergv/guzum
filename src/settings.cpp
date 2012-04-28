@@ -18,20 +18,21 @@ namespace Guzum
 {
 namespace Config
 {
+    // explicitly initialize settings
+    void initSettings(const QString & file)
+    {
+        // init settings on first call
+        QCoreApplication::setApplicationName("Guzum");
+        QCoreApplication::setApplicationVersion(GUZUM_VERSION);
+        QCoreApplication::setOrganizationName("regolit.com");
+        QCoreApplication::setOrganizationDomain("guzum.regolit.com");
+
+        ::_settings = new QSettings(profilePath()+"/" + file, QSettings::IniFormat);
     
+    }
+
     QSettings * settings()
     {
-        if (0 == ::_settings) {
-            // init settings on first call
-            QCoreApplication::setApplicationName("Guzum");
-            QCoreApplication::setApplicationVersion(GUZUM_VERSION);
-            QCoreApplication::setOrganizationName("regolit.com");
-            QCoreApplication::setOrganizationDomain("guzum.regolit.com");
-
-            ::_settings = new QSettings(profilePath()+"/guzum.ini", QSettings::IniFormat);
-
-        }
-        
         return ::_settings; 
     }
 

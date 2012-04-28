@@ -13,11 +13,13 @@
 
 struct QSettings;
 struct QWidget;
+struct QString;
 
 namespace Guzum
 {
 namespace Config
 {
+    void initSettings(const QString & file);
     QSettings * settings();
     QString version();
     QString uiLang();

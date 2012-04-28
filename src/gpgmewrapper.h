@@ -28,7 +28,8 @@ public:
     GPGME_Error error();
 
 
-    QByteArray decryptFile(const QString & filename, QWidget * parent = 0);
+    QByteArray decryptFile(const QString & filename, QString & uid, QWidget * parent = 0);
+    void encryptBytesToFile(const QByteArray & data, const QString & filename, const QString & uid);
     
 private:
     GPGME(gpgme_ctx_t context);

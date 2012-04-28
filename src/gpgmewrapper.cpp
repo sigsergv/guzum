@@ -100,17 +100,10 @@ GPGME_Error GPGME::init()
         return err;
     }
 
-    /*
-    QDir gpgHome = QDir::home();
-    gpgHome.cd(".gnupg");
-
-    err = gpgme_ctx_set_engine_info(context, GPGME_PROTOCOL_OpenPGP, 
-            engineInfo->file_name, gpgHome.canonicalPath().toAscii());
-    */
+    // we don't need to set gnupg home dir explicitly
     err = gpgme_ctx_set_engine_info(context, GPGME_PROTOCOL_OpenPGP, 
             engineInfo->file_name,
-            //engineInfo->home_dir
-            "./test-gpg"
+            engineInfo->home_dir
             );
     if (err != GPG_ERR_NO_ERROR) {
         return err;
@@ -133,7 +126,7 @@ void GPGME::setError(GPGME_Error error)
 }
 
 
-QByteArray GPGME::decryptFile(const QString & filename, QWidget * parent)
+QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget * parent)
 {
     setError(GPG_ERR_NO_ERROR); // clear error
     CallbackData cbData;
@@ -163,13 +156,14 @@ QByteArray GPGME::decryptFile(const QString & filename, QWidget * parent)
 
     // process data (it's cipher)
     gpgme_data_t plain;
-    gpgme_data_new (&plain);
+    gpgme_data_new(&plain);
     err = gpgme_op_decrypt(p->context, data, plain);
     // unset passphrase callback
     gpgme_set_passphrase_cb(p->context, 0, 0);
     if (err != GPG_ERR_NO_ERROR) {
         gpgme_data_release(data);
         gpgme_data_release(plain);
+        qDebug() << "aaaaaaaaa";
         setError(err);
         return QByteArray();
     }
@@ -193,7 +187,62 @@ QByteArray GPGME::decryptFile(const QString & filename, QWidget * parent)
         resBytes.append(buf, read);
     }
 
+    gpgme_decrypt_result_t decrypt_res = gpgme_op_decrypt_result(p->context);
+    gpgme_recipient_t recipient;
+    if (decrypt_res) {
+        recipient = decrypt_res->recipients;
+        while (recipient) {
+            uid = recipient->keyid;
+            recipient = recipient->next;
+            break; // just ignore the other recipients
+        }
+    }
     return resBytes;
+}
+
+void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename, const QString & uid)
+{
+    setError(GPG_ERR_NO_ERROR); // clear error
+    qDebug() << "Encrypt data to file" << filename;
+    gpgme_error_t err;
+
+    // list all available keys and find the appropriate
+    err = gpgme_op_keylist_start(p->context, uid.toAscii().data(), 0);
+    gpgme_key_t key = 0;
+
+    while (1) {
+        err = gpgme_op_keylist_next(p->context, &key);
+        if (err == GPG_ERR_NO_ERROR) {
+            // key found
+            qDebug() << "KEY FOUND";
+        }
+        break; // take just one key
+    }
+    gpgme_op_keylist_end(p->context);
+
+    // if filename ends with ".asc" then use armored output, otherwise use binary
+
+    gpgme_data_t cipher;
+    
+    return;
+    // prepare file for writing
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)) {
+        setError(GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE);
+        return;
+    }
+
+    err = gpgme_data_new_from_fd(&cipher, file.handle());
+    if (err != GPG_ERR_NO_ERROR) {
+        setError(err);
+        return;
+    }
+
+    gpgme_data_t plain;
+    gpgme_data_new_from_mem(&plain, data.data(), data.length(), 0); // do not copy data
+
+    //err = gpgme_op_encrypt(p->context, );
+
 }
 
 GPGME * GPGME::instance()

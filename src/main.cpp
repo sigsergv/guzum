@@ -18,9 +18,6 @@
 
 int main(int argv, char *_args[])
 {
-    // init settings
-    Guzum::Config::settings();
-
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QApplication app(argv, _args);
@@ -47,9 +44,13 @@ int main(int argv, char *_args[])
         if (args[1] == "--tray") {
             // launch in tray icon mode
             qDebug() << "tray icon mode";
+            // init settings: tray icon mode
+            Guzum::Config::initSettings("icon.ini");
         } else {
             // treat args[1] as a filename
             // we need to check is file exists and create viewer window
+            // init settings: display file mode
+            Guzum::Config::initSettings("guzum.ini");
             qDebug() << "load file contents mode";
             QFileInfo fi(args[1]);
             if (!fi.exists()) {
@@ -77,7 +78,9 @@ int main(int argv, char *_args[])
             return 1;
         }
         QApplication::setActiveWindow(textWindow);
-        textWindow->show();
+        if (!textWindow->show()) {
+            return 1;
+        }
     }
 
 

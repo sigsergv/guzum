@@ -19,6 +19,7 @@ struct EncryptedTextWindow::Private
     QString filenameHash;
     QPlainTextEdit * editor;
     QToolBar * topToolBar;
+    QString gpgUid; // UID for encrypting/decrypting
 };
 
 
@@ -40,15 +41,28 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     // create actions
     QAction * quitAction = new QAction(tr("&Quit"), this);
     QAction * aboutAction = new QAction(tr("&About Guzum"), this);
+    QAction * saveAction = new QAction(QIcon(":/save-22x22.png"), tr("&Save file"), this);
+    QAction * changeCurrentFontAction = new QAction(QIcon(":/text-22x22.png"), tr("Change current font"), this);
+    QAction * changeDefaultFontAction = new QAction(tr("Set default &font"), this);
+
+    saveAction->setShortcut(QKeySequence(Qt::Key_S + Qt::CTRL));
 
     // connect signals
     connect(quitAction, SIGNAL(triggered()),
             this, SLOT(close()));
     connect(aboutAction, SIGNAL(triggered()),
             this, SLOT(showAboutDialog()));
+    connect(saveAction, SIGNAL(triggered()),
+            this, SLOT(saveFile()));
+    connect(changeCurrentFontAction, SIGNAL(triggered()),
+            this, SLOT(changeCurrentFont()));
+    connect(changeDefaultFontAction, SIGNAL(triggered()),
+            this, SLOT(changeDefaultFont()));
 
     // add basic control elements: top toolbar (fixed, not movable/resizeable), buttons on that toolbar, mainmenu
     QMenu * fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(saveAction);
+    fileMenu->addAction(changeDefaultFontAction);
     fileMenu->addAction(quitAction);
     QMenu * helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAction);
@@ -63,6 +77,9 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     p->topToolBar->setAllowedAreas(Qt::TopToolBarArea);
     p->topToolBar->setMovable(false);
     p->topToolBar->setObjectName("MainToolbar");
+    // add actions to the toolbar
+    p->topToolBar->addAction(saveAction);
+    p->topToolBar->addAction(changeCurrentFontAction);
     addToolBar(p->topToolBar);
     
     // try to restore window settings
@@ -72,7 +89,19 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     restoreGeometry(settings->value(key).toByteArray());
     key = QString("%1-state").arg(p->filenameHash);
     restoreState(settings->value(key).toByteArray());
+    key = QString("%1-font").arg(p->filenameHash);
+    QVariant value = settings->value(key);
     settings->endGroup();
+    if (value.canConvert<QFont>()) {
+        p->editor->setFont(value.value<QFont>());
+    } else {
+        settings->beginGroup("Defaults");
+        value = settings->value("font");
+        settings->endGroup();
+        if (value.canConvert<QFont>()) {
+            p->editor->setFont(value.value<QFont>());
+        }
+    }
 }
 
 EncryptedTextWindow::~EncryptedTextWindow()
@@ -85,30 +114,34 @@ void EncryptedTextWindow::close()
     QMainWindow::close();
 }
 
-void EncryptedTextWindow::show()
+bool EncryptedTextWindow::show()
 {
-    QMainWindow::show();
 
     // now try to decrypt and load data from the file
     GPGME * gpg = GPGME::instance();
-    QByteArray decrypted = gpg->decryptFile(p->filename, this);
+    QByteArray decrypted = gpg->decryptFile(p->filename, p->gpgUid, this);
     if (gpg->error() != GPG_ERR_NO_ERROR) {
         // failed to decrypt file
+        QString errorMessage;
         switch (gpg->error()) {
         case GPG_ERR_INV_VALUE:
             qDebug() << "GPG_ERR_INV_VALUE";
+            errorMessage = tr("GPG_ERR_INV_VALUE");
             break;
 
         case GPG_ERR_NO_DATA:
             qDebug() << "GPG_ERR_NO_DATA";
+            errorMessage = tr("GPG_ERR_NO_DATA");
             break;
 
         case GPG_ERR_DECRYPT_FAILED:
             qDebug() << "GPG_ERR_DECRYPT_FAILED";
+            errorMessage = tr("Unable to decrypt message, most probably private key for the encrypted file has not been found.");
             break;
 
         case GPG_ERR_BAD_PASSPHRASE:
             qDebug() << "GPG_ERR_BAD_PASSPHRASE";
+            errorMessage = tr("Incorrect passphrase.");
             break;
 
         case GPG_ERR_CANCELED:
@@ -119,17 +152,64 @@ void EncryptedTextWindow::show()
             qDebug() << "Other decryption error: " << gpg->error();
             qDebug() << "GPG_ERR_SYSTEM_ERROR" << GPG_ERR_SYSTEM_ERROR;
         }
+        if (!errorMessage.isEmpty()) {
+            QMessageBox::critical(0, tr("Decryption failed"), errorMessage);
+        }
+        return false;
     } else {
         // load data into the editor
         // TODO: guess encoding? Assume it's UTF-8 for now
         QString contents = QString::fromUtf8(decrypted.constData());
         p->editor->setPlainText(contents);
+        QMainWindow::show();
+        return true;
     }
 }
 
 void EncryptedTextWindow::showAboutDialog()
 {
     qDebug() << "showAboutDialog()";
+}
+
+void EncryptedTextWindow::saveFile()
+{
+    // write data back to file, i.e. encrypt them
+    qDebug() << "encrypt data using key " << p->gpgUid;
+    if (p->gpgUid.isEmpty()) {
+        return;
+    }
+    GPGME * gpg = GPGME::instance();
+    QByteArray data = p->editor->toPlainText().toUtf8();
+    gpg->encryptBytesToFile(data, p->filename, p->gpgUid);
+}
+
+void EncryptedTextWindow::changeCurrentFont()
+{
+    bool ok;
+    QFont currentFont = p->editor->font();
+    QFont font = QFontDialog::getFont(&ok, currentFont, this);
+    // change window font, also remember it in the settings
+    if (ok) {
+        p->editor->setFont(font);
+        QSettings * settings = Guzum::Config::settings();
+        settings->beginGroup("Windows");
+        QString key = QString("%1-font").arg(p->filenameHash);
+        settings->setValue(key, font);
+        settings->endGroup();
+    }
+}
+
+void EncryptedTextWindow::changeDefaultFont()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(&ok, this);
+
+    if (ok) {
+        QSettings * settings = Guzum::Config::settings();
+        settings->beginGroup("Defaults");
+        settings->setValue("font", font);
+        settings->endGroup();
+    }
 }
 
 void EncryptedTextWindow::rememberGeometryAndState()

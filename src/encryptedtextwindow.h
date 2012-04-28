@@ -25,10 +25,13 @@ private:
 
 public slots:
     void close();
-    void show();
+    bool show();
 
 protected slots:
     void showAboutDialog();
+    void saveFile();
+    void changeCurrentFont();
+    void changeDefaultFont();
 
 protected:
     void rememberGeometryAndState();
