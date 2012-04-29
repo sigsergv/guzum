@@ -58,12 +58,6 @@ int main(int argv, char *_args[])
                         EncryptedTextWindow::tr("File `%1' not found").arg(args[1]));
                 return 1;
             }
-            // also check file size
-            if (fi.size() > 1024*1024) { // 1M
-                QMessageBox::critical(0, EncryptedTextWindow::tr("Error"), 
-                        EncryptedTextWindow::tr("File `%1' is too large to open.").arg(args[1]));
-                return 1;
-            }
             QString filename = fi.canonicalFilePath();
             textWindow = new EncryptedTextWindow(filename);
         }
