@@ -94,7 +94,16 @@ void TrayManager::appendFile(const QString & filename)
 
 void TrayManager::openFilename()
 {
-    qDebug() << "open filename";
+    // first find what action has been triggered, extract filename and open it
+    QAction * action = qobject_cast<QAction*>(sender());
+    QString filename = action->text();
+    // execute the same application but pass filename as the argument
+    QString app = QCoreApplication::applicationFilePath();
+    QStringList args;
+    args << filename;
+    QString wd = "/"; // working directory
+     
+    QProcess::startDetached(app, args, wd);
 }
 
 void TrayManager::dumpFilenames()
