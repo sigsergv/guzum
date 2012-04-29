@@ -37,6 +37,10 @@ TrayManager::TrayManager(QObject * parent)
     // connect signals
     connect(quitAction, SIGNAL(triggered()),
             this, SLOT(quit()));
+    
+    // for future use
+    //connect(p->trayMenu, SIGNAL(hovered(QAction*)),
+    //        this, SLOT(menuHovered(QAction*)));
 
     // create system tray icon
     p->trayIcon = new QSystemTrayIcon(QIcon(":/guzum-16.png"), this);
@@ -106,6 +110,23 @@ void TrayManager::openFilename()
     QProcess::startDetached(app, args, wd);
 }
 
+void TrayManager::menuHovered(QAction * action)
+{
+    // find action first
+    bool found = false;
+    Q_FOREACH (QAction * a, p->trayFilenamesActions) {
+        if (a == action) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        return;
+    }
+
+    QToolTip::showText(QCursor::pos(), action->text(), 0);
+}
+
 void TrayManager::dumpFilenames()
 {
     QSettings * settings = Guzum::Config::settings();
@@ -115,7 +136,7 @@ void TrayManager::dumpFilenames()
     QString key;
     Q_FOREACH (const QString & filename, p->trayFilenames) {
         n++;
-        key = QString("item-%1").arg(n, 2, 10, QLatin1Char('0'));
+        key = QString("item-%1").arg(n, 2, 10, QLatin1Char('0')); // form name like "item-64"
         QHash<QString, QVariant> value;
         value["filename"] = filename;
         settings->setValue(key, value);
@@ -136,6 +157,7 @@ void TrayManager::rebuildFilenamesMenu()
 
     Q_FOREACH (const QString & filename, p->trayFilenames) {
         action = new QAction(filename, this);
+        action->setToolTip("asd");
         connect(action, SIGNAL(triggered()),
                 this, SLOT(openFilename()));
         p->trayFilenamesActions.append(action);

@@ -10,6 +10,8 @@
 
 #include <QObject>
 
+struct QAction;
+
 class TrayManager : public QObject
 {
     Q_OBJECT
@@ -21,6 +23,7 @@ protected slots:
     void quit();
     void appendFile(const QString & filename);
     void openFilename();
+    void menuHovered(QAction * action);
 
 protected:
     void dumpFilenames();
