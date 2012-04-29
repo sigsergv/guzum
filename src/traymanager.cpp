@@ -13,11 +13,13 @@
 
 #define TRAY_FILENAMES_LIST_SIZE_LIMIT 10
 
+typedef QHash<QString, QVariant> QStringsHash;
+
 struct TrayManager::Private {
     QSystemTrayIcon * trayIcon;
     QMenu * trayMenu;
     QAction * filenamesSeparatorAction;
-    QStringList trayFilenames;
+    QList< QStringsHash > trayFilenames;
     QList<QAction*> trayFilenamesActions;
 };
 
@@ -55,16 +57,21 @@ TrayManager::TrayManager(QObject * parent)
             QHash<QString, QVariant> value = v.toHash();
             if (value.contains("filename")) {
                 QVariant vf = value["filename"];
+                QStringsHash item;
+
                 if (vf.canConvert<QString>()) {
-                    p->trayFilenames << vf.toString();
+                    item["filename"] = vf.toString();
                 }
+                if (value.contains("gnupghome") && value["gnupghome"].canConvert<QString>()) {
+                    // this is a path to gnupg data directory
+                    item["gnupghome"] = value["gnupghome"].toString();
+                }
+                p->trayFilenames << item;
             }
-            //QHash<QString, QString> value = v.con
         }
     }
     settings->endGroup();
     rebuildFilenamesMenu();
-    qDebug() << "filenames" << p->trayFilenames;
 }
 
 TrayManager::~TrayManager()
@@ -77,37 +84,47 @@ void TrayManager::quit()
     QCoreApplication::quit();
 }
 
-void TrayManager::appendFile(const QString & filename)
+void TrayManager::appendFile(const QString & filename, const QString & gnupgHome)
 {
     qDebug() << "Append file" << filename << "to the list";
     // first try to find filename in the list and pop it to the top if there is one
-    int ind = p->trayFilenames.indexOf(filename);
+    int len = p->trayFilenames.size();
+    int ind = -1;
+    for (int i=0; i<len; i++) {
+        QStringsHash item = p->trayFilenames[i];
+        if (item["filename"] == filename) {
+            ind = i;
+            break;
+        }
+    }
     if (ind != -1) {
         p->trayFilenames.removeAt(ind);
     }
-    p->trayFilenames.insert(0, filename);
+    QStringsHash item;
+    item["filename"] = filename;
+    item["gnupghome"] = gnupgHome;
+    p->trayFilenames.insert(0, item);
     if (p->trayFilenames.size() > TRAY_FILENAMES_LIST_SIZE_LIMIT) {
         // delete the last
         p->trayFilenames.removeAt(p->trayFilenames.size() - 1);
     }
     dumpFilenames();
     rebuildFilenamesMenu();
-
-    qDebug() << p->trayFilenames;
 }
 
 void TrayManager::openFilename()
 {
     // first find what action has been triggered, extract filename and open it
     QAction * action = qobject_cast<QAction*>(sender());
-    QString filename = action->text();
+    QStringsHash item = action->data().toHash();
+
+    QString filename = item["filename"].toString();
     // execute the same application but pass filename as the argument
     QString app = QCoreApplication::applicationFilePath();
     QStringList args;
     args << filename;
-    QString wd = "/"; // working directory
      
-    QProcess::startDetached(app, args, wd);
+    QProcess::startDetached(app, args);
 }
 
 void TrayManager::menuHovered(QAction * action)
@@ -134,12 +151,10 @@ void TrayManager::dumpFilenames()
     settings->remove(""); // remove all keys in the group
     int n = 0;
     QString key;
-    Q_FOREACH (const QString & filename, p->trayFilenames) {
+    Q_FOREACH (const QStringsHash item, p->trayFilenames) {
         n++;
         key = QString("item-%1").arg(n, 2, 10, QLatin1Char('0')); // form name like "item-64"
-        QHash<QString, QVariant> value;
-        value["filename"] = filename;
-        settings->setValue(key, value);
+        settings->setValue(key, item);
     }
     settings->endGroup();
     settings->sync();
@@ -155,9 +170,10 @@ void TrayManager::rebuildFilenamesMenu()
     }
     p->trayFilenamesActions.clear();
 
-    Q_FOREACH (const QString & filename, p->trayFilenames) {
-        action = new QAction(filename, this);
-        action->setToolTip("asd");
+    Q_FOREACH (const QStringsHash item, p->trayFilenames) {
+        action = new QAction(item["filename"].toString(), this);
+        //action->setToolTip("asd");
+        action->setData(item);
         connect(action, SIGNAL(triggered()),
                 this, SLOT(openFilename()));
         p->trayFilenamesActions.append(action);

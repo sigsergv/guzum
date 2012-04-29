@@ -21,7 +21,7 @@ public:
 
 protected slots:
     void quit();
-    void appendFile(const QString & filename);
+    void appendFile(const QString & filename, const QString & gnupgHome);
     void openFilename();
     void menuHovered(QAction * action);
 

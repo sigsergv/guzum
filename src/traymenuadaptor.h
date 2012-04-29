@@ -28,7 +28,7 @@ public:
     virtual ~TrayMenuAdaptor();
 
 public slots:
-    void appendFile(const QString & filename);
+    void appendFile(const QString & filename, const QString & gnupgHome);
 };
 
 #endif // _TRAYMENUADAPTOR_H_

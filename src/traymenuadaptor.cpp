@@ -19,7 +19,7 @@ TrayMenuAdaptor::~TrayMenuAdaptor()
 {
 }
 
-void TrayMenuAdaptor::appendFile(const QString & filename)
+void TrayMenuAdaptor::appendFile(const QString & filename, const QString & gnupgHome)
 {
-    QMetaObject::invokeMethod(parent(), "appendFile", Q_ARG(QString, filename));
+    QMetaObject::invokeMethod(parent(), "appendFile", Q_ARG(QString, filename), Q_ARG(QString, gnupgHome));
 }

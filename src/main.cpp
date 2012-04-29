@@ -37,7 +37,7 @@ int main(int argv, char *_args[])
     // filepath : open file in the editor
     QStringList args = QCoreApplication::arguments();
     if (args.length() == 1) {
-        // display file selector
+        // TODO: display file selector
         return 0;
     }
 
