@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+  <file alias="guzum-16.png">icons/16x16/Guzum.png</file>
   <file alias="guzum-32.png">icons/32x32/Guzum.png</file>
   <file alias="guzum-48.png">icons/48x48/Guzum.png</file>
   <file alias="text-22x22.png">icons/22x22/draw-text.png</file>

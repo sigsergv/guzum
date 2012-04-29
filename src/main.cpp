@@ -11,10 +11,13 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtDebug>
+#include <QtDBus/QDBusConnection>
 
 #include "settings.h"
 #include "encryptedtextwindow.h"
 #include "gpgmewrapper.h"
+#include "traymanager.h"
+#include "traymenuadaptor.h"
 
 int main(int argv, char *_args[])
 {
@@ -46,6 +49,12 @@ int main(int argv, char *_args[])
             qDebug() << "tray icon mode";
             // init settings: tray icon mode
             Guzum::Config::initSettings("icon.ini");
+            TrayManager * tray = new TrayManager();
+
+            new TrayMenuAdaptor(tray);
+            QDBusConnection connection = QDBusConnection::sessionBus();
+            connection.registerObject("/Tray", tray);
+            connection.registerService("com.regolit.guzum.tray");
         } else {
             // treat args[1] as a filename
             // we need to check is file exists and create viewer window

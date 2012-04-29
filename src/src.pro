@@ -4,20 +4,24 @@ DEFINES += _FILE_OFFSET_BITS="64"
 HEADERS += settings.h \
     encryptedtextwindow.h \
     gpgmewrapper.h \
-    passphrasedialog.h
+    passphrasedialog.h \
+    traymanager.h \
+    traymenuadaptor.h
 
 SOURCES += main.cpp \
     settings.cpp \
     encryptedtextwindow.cpp \
     gpgmewrapper.cpp \
-    passphrasedialog.cpp
+    passphrasedialog.cpp \
+    traymanager.cpp \
+    traymenuadaptor.cpp
 
 FORMS += passphrasedialog.ui
 
 CODECFORTR = UTF-8
 TRANSLATIONS = ../translations/guzum_ru.ts
 
-QT += xml sql network webkit 
+QT += network dbus
 
 RESOURCES = ../resources/application.qrc
 TARGET = guzum
