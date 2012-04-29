@@ -31,6 +31,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     QFileInfo fi(filename);
     p->filename = fi.canonicalFilePath();
 
+    setWindowTitle(QString("%1 [guzum]").arg(fi.fileName()));
+
     // compute filename hashsum, it's used for storing settings for example
     QCryptographicHash h(QCryptographicHash::Sha1);
     QByteArray utfData = p->filename.toUtf8();
