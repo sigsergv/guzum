@@ -62,6 +62,7 @@ TrayManager::TrayManager(QObject * parent)
                 if (vf.canConvert<QString>()) {
                     item["filename"] = vf.toString();
                 }
+                item["gnupghome"] = QString();
                 if (value.contains("gnupghome") && value["gnupghome"].canConvert<QString>()) {
                     // this is a path to gnupg data directory
                     item["gnupghome"] = value["gnupghome"].toString();
@@ -108,6 +109,7 @@ void TrayManager::appendFile(const QString & filename, const QString & gnupgHome
         // delete the last
         p->trayFilenames.removeAt(p->trayFilenames.size() - 1);
     }
+    qDebug() << item;
     dumpFilenames();
     rebuildFilenamesMenu();
 }
@@ -119,6 +121,9 @@ void TrayManager::openFilename()
     QStringsHash item = action->data().toHash();
 
     QString filename = item["filename"].toString();
+    QString gnupgHome = item["gnupghome"].toString();
+    qDebug() << "filename: " << filename << "home" << gnupgHome;
+
     // execute the same application but pass filename as the argument
     QString app = QCoreApplication::applicationFilePath();
     QStringList args;

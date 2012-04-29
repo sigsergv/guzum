@@ -10,6 +10,7 @@
 #include <QInputDialog>
 #include <locale.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 #include "gpgmewrapper.h"
 #include "passphrasedialog.h"
@@ -27,13 +28,15 @@ struct GPGME::Private
 {
     gpgme_ctx_t context;
     GPGME_Error error;
+    QString gpgHomeDir;
 };
 
-GPGME::GPGME(gpgme_ctx_t context)
+GPGME::GPGME(gpgme_ctx_t context, const QString & gpgHomeDir)
 {
     p = new Private;
     p->context = context;
     p->error = GPG_ERR_NO_ERROR;
+    p->gpgHomeDir = gpgHomeDir;
 }
 
 GPGME::~GPGME()
@@ -104,15 +107,25 @@ GPGME_Error GPGME::init()
     }
 
     // we don't need to set gnupg home dir explicitly
+    QString gpgHomeDir = QString::fromAscii(getenv("GNUPGHOME"));
+    if (gpgHomeDir.isEmpty()) {
+        // use default path: "~/.gnupg"
+        QDir gh = QDir::home();
+        gh.cd(".gnupg");
+        gpgHomeDir = gh.canonicalPath();
+    }
+    qDebug() << "GNUPGHOME" << gpgHomeDir;
+
     err = gpgme_ctx_set_engine_info(context, GPGME_PROTOCOL_OpenPGP, 
             engineInfo->file_name,
-            engineInfo->home_dir
+            //engineInfo->home_dir
+            gpgHomeDir.toAscii().data()
             );
     if (err != GPG_ERR_NO_ERROR) {
         return err;
     }
 
-    inst = new GPGME(context);
+    inst = new GPGME(context, gpgHomeDir);
     qDebug() << "gpgme initalized";
 
     return GPG_ERR_NO_ERROR;
@@ -282,7 +295,6 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     keys[0] = key;
     keys[1] = 0;
 
-    qDebug() << "aaa";
     err = gpgme_op_encrypt(p->context, keys, static_cast<gpgme_encrypt_flags_t>(0), plain, cipher);
     if (err != GPG_ERR_NO_ERROR) {
         // revert file contents in case of error
@@ -290,6 +302,12 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
         file.write(cipherBackup);
         setError(err);
     }
+}
+
+
+QString GPGME::gpgHomeDir()
+{
+    return p->gpgHomeDir;   
 }
 
 GPGME * GPGME::instance()

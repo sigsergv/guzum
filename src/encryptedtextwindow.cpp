@@ -177,10 +177,11 @@ bool EncryptedTextWindow::show()
         p->editor->setPlainText(contents);
         QMainWindow::show();
         // push filename to dbus service
+        GPGME * gpg = GPGME::instance();
         QDBusConnection bus = QDBusConnection::sessionBus();
         QDBusInterface interface("com.regolit.guzum.tray", "/Tray", "com.regolit.guzum.tray", bus);
         if (interface.isValid()) {
-            QDBusReply<bool> dbusReply = interface.call("appendFile", p->filename);
+            QDBusReply<bool> dbusReply = interface.call("appendFile", p->filename, gpg->gpgHomeDir());
         } else {
             qDebug() << "Cannot send filename to DBus service";
         }

@@ -7,7 +7,9 @@
 
 #ifndef _GPGMEWRAPPER_H_
 #define _GPGMEWRAPPER_H_
+
 #include <gpgme.h>
+#include <QString>
 
 typedef unsigned int GPGME_Error;
 
@@ -23,7 +25,6 @@ typedef enum {
 
 } GPGME_Wrapper_Errors;
 
-struct QString;
 struct QWidget;
 
 class GPGME {
@@ -32,12 +33,13 @@ public:
     static GPGME_Error init();
     GPGME_Error error();
 
-
     QByteArray decryptFile(const QString & filename, QString & uid, QWidget * parent = 0);
     void encryptBytesToFile(const QByteArray & data, const QString & filename, const QString & uid);
+
+    QString gpgHomeDir();
     
 private:
-    GPGME(gpgme_ctx_t context);
+    GPGME(gpgme_ctx_t context, const QString & gpgHomeDir);
     ~GPGME();
     static GPGME * inst;
     void setError(GPGME_Error error, bool wrapperError = false);
