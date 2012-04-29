@@ -188,7 +188,7 @@ QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget *
     int read;
     char buf[bufSize];
 
-    gpgme_data_rewind(plain);
+    gpgme_data_seek(plain, 0, SEEK_SET);
     while (true) {
         read = gpgme_data_read(plain, (void*)buf, bufSize);
         if (read == 0) {
