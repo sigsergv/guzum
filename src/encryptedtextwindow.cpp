@@ -20,6 +20,7 @@ struct EncryptedTextWindow::Private
     QPlainTextEdit * editor;
     QToolBar * topToolBar;
     QString gpgUid; // UID for encrypting/decrypting
+    QAction * saveAction;
 };
 
 
@@ -46,6 +47,13 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     QAction * changeDefaultFontAction = new QAction(tr("Set default &font"), this);
 
     saveAction->setShortcut(QKeySequence(Qt::Key_S + Qt::CTRL));
+    saveAction->setDisabled(true);
+
+    // create widgets
+    p->editor = new QPlainTextEdit(this);
+    //layout()->addWidget(p->editor);
+    setCentralWidget(p->editor);
+    setFocusProxy(p->editor);
 
     // connect signals
     connect(quitAction, SIGNAL(triggered()),
@@ -58,6 +66,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
             this, SLOT(changeCurrentFont()));
     connect(changeDefaultFontAction, SIGNAL(triggered()),
             this, SLOT(changeDefaultFont()));
+    connect(p->editor, SIGNAL(modificationChanged(bool)),
+            this, SLOT(editorModificationChanged(bool)));
 
     // add basic control elements: top toolbar (fixed, not movable/resizeable), buttons on that toolbar, mainmenu
     QMenu * fileMenu = menuBar()->addMenu(tr("&File"));
@@ -66,12 +76,6 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     fileMenu->addAction(quitAction);
     QMenu * helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAction);
-
-    // create widgets
-    p->editor = new QPlainTextEdit(this);
-    //layout()->addWidget(p->editor);
-    setCentralWidget(p->editor);
-    setFocusProxy(p->editor);
 
     p->topToolBar = new QToolBar(this);
     p->topToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -102,6 +106,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
             p->editor->setFont(value.value<QFont>());
         }
     }
+
+    p->saveAction = saveAction;
 }
 
 EncryptedTextWindow::~EncryptedTextWindow()
@@ -132,6 +138,11 @@ bool EncryptedTextWindow::show()
         case GPG_ERR_NO_DATA:
             qDebug() << "GPG_ERR_NO_DATA";
             errorMessage = tr("GPG_ERR_NO_DATA");
+            break;
+
+        case GPGME_WRAPPER_ERR_FILE_TOO_LARGE:
+            qDebug() << "GPGME_WRAPPER_ERR_FILE_TOO_LARGE";
+            errorMessage = tr("File is too large to decrypt.");
             break;
 
         case GPG_ERR_DECRYPT_FAILED:
@@ -181,6 +192,43 @@ void EncryptedTextWindow::saveFile()
     GPGME * gpg = GPGME::instance();
     QByteArray data = p->editor->toPlainText().toUtf8();
     gpg->encryptBytesToFile(data, p->filename, p->gpgUid);
+    if (gpg->error() != GPG_ERR_NO_ERROR) {
+        QString errorMessage;
+        switch (gpg->error()) {
+        case GPGME_WRAPPER_ERR_DATA_TOO_LARGE:
+            errorMessage = tr("Data too large to encrypt.");
+            break;
+
+        case GPGME_WRAPPER_ERR_CANNOT_FIND_KEY:
+            errorMessage = tr("Cannot find public key to encrypt data.");
+            break;
+
+        case GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE:
+            errorMessage = tr("Cannot open target file.");
+            break;
+
+        case GPGME_WRAPPER_ERR_FILE_TOO_LARGE:
+            errorMessage = tr("Cannot backup encrypted file, it's too large.");
+            break;
+
+        case GPG_ERR_UNUSABLE_PUBKEY:
+            errorMessage = tr("Unusable public key (maybe expired or revoked)");
+            break;
+
+        case GPG_ERR_INV_VALUE:
+            errorMessage = tr("GPG_ERR_INV_VALUE");
+            break;
+
+        default:
+            errorMessage = tr("Unknown error: %1").arg(gpg->error());
+        }
+        if (!errorMessage.isEmpty()) {
+            QMessageBox::critical(0, tr("Decryption failed"), errorMessage);
+        }
+    } else {
+        // file is successfully written so change editor modification state
+        p->editor->document()->setModified(false);
+    }
 }
 
 void EncryptedTextWindow::changeCurrentFont()
@@ -209,6 +257,15 @@ void EncryptedTextWindow::changeDefaultFont()
         settings->beginGroup("Defaults");
         settings->setValue("font", font);
         settings->endGroup();
+    }
+}
+
+void EncryptedTextWindow::editorModificationChanged(bool changed)
+{
+    if (changed) {
+        p->saveAction->setDisabled(false);
+    } else {
+        p->saveAction->setDisabled(true);
     }
 }
 

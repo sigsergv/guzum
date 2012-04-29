@@ -32,6 +32,7 @@ protected slots:
     void saveFile();
     void changeCurrentFont();
     void changeDefaultFont();
+    void editorModificationChanged(bool changed);
 
 protected:
     void rememberGeometryAndState();

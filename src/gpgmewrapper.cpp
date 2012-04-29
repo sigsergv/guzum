@@ -14,6 +14,9 @@
 #include "gpgmewrapper.h"
 #include "passphrasedialog.h"
 
+// 100 MB limit
+#define FILESIZE_HARD_LIMIT 104857610
+
 gpgme_ctx_t context;
 
 struct CallbackData {
@@ -117,12 +120,16 @@ GPGME_Error GPGME::init()
 
 GPGME_Error GPGME::error()
 {
-    return gpg_err_code(p->error);
+    return p->error;
 }
 
-void GPGME::setError(GPGME_Error error)
+void GPGME::setError(GPGME_Error error, bool wrapperError)
 {
-    p->error = error;
+    if (wrapperError) {
+        p->error = error;
+    } else {
+        p->error = gpg_err_code(error);
+    }
 }
 
 
@@ -132,6 +139,9 @@ QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget *
     CallbackData cbData;
     cbData.parent = parent;
 
+
+    qDebug() << "ERERR" << gpg_err_source(GPG_ERR_CODE_DIM+1);
+
     gpgme_set_passphrase_cb(p->context, passphraseCallback, &cbData);
 
     qDebug() << "decrypting file" << filename;
@@ -140,11 +150,15 @@ QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget *
 
     QFile file(filename);
     if (!file.exists()) {
-        setError(GPGME_WRAPPER_ERR_FILE_NOT_FOUND);
+        setError(GPGME_WRAPPER_ERR_FILE_NOT_FOUND, true);
         return QByteArray();
     }
     if (!file.open(QIODevice::ReadOnly)) {
-        setError(GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE);
+        setError(GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE, true);
+        return QByteArray();
+    }
+    if (file.size() > FILESIZE_HARD_LIMIT) {
+        setError(GPGME_WRAPPER_ERR_FILE_TOO_LARGE, true);
         return QByteArray();
     }
 
@@ -206,6 +220,12 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     qDebug() << "Encrypt data to file" << filename;
     gpgme_error_t err;
 
+    // check data size
+    if (data.size() > FILESIZE_HARD_LIMIT) {
+        setError(GPGME_WRAPPER_ERR_DATA_TOO_LARGE, true);
+        return;
+    }
+
     // list all available keys and find the appropriate
     err = gpgme_op_keylist_start(p->context, uid.toAscii().data(), 0);
     gpgme_key_t key = 0;
@@ -220,15 +240,35 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     }
     gpgme_op_keylist_end(p->context);
 
+    if (key == 0) {
+        // key not found
+        setError(GPGME_WRAPPER_ERR_CANNOT_FIND_KEY, true);
+        return;
+    }
+
     // if filename ends with ".asc" then use armored output, otherwise use binary
 
     gpgme_data_t cipher;
+    gpgme_data_t plain;
+
+    gpgme_data_new_from_mem(&plain, data.data(), data.size(), 0); // do not copy data
     
-    return;
-    // prepare file for writing
+    // backup file contents
     QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        setError(GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE, true);
+        return;
+    }
+    if (file.size() > FILESIZE_HARD_LIMIT) {
+        setError(GPGME_WRAPPER_ERR_FILE_TOO_LARGE, true);
+        return;
+    }
+    QByteArray cipherBackup = file.readAll();
+    file.close();
+    
+    // prepare file for writing
     if (!file.open(QIODevice::WriteOnly)) {
-        setError(GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE);
+        setError(GPGME_WRAPPER_ERR_CANNOT_OPEN_FILE, true);
         return;
     }
 
@@ -238,11 +278,18 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
         return;
     }
 
-    gpgme_data_t plain;
-    gpgme_data_new_from_mem(&plain, data.data(), data.length(), 0); // do not copy data
+    gpgme_key_t keys[2];
+    keys[0] = key;
+    keys[1] = 0;
 
-    //err = gpgme_op_encrypt(p->context, );
-
+    qDebug() << "aaa";
+    err = gpgme_op_encrypt(p->context, keys, static_cast<gpgme_encrypt_flags_t>(0), plain, cipher);
+    if (err != GPG_ERR_NO_ERROR) {
+        // revert file contents in case of error
+        file.resize(0);
+        file.write(cipherBackup);
+        setError(err);
+    }
 }
 
 GPGME * GPGME::instance()
