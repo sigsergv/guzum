@@ -4,7 +4,8 @@ builddir:
 	mkdir -p builddir
 
 builddir/Makefile: builddir
-	lrelease src/src.pro
+	# transltations are disabled for now
+	#lrelease src/src.pro
 	cd builddir && qmake-qt4 PREFIX=/usr ../$(APPNAME).pro
 
 build: build-stamp
