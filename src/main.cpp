@@ -29,7 +29,6 @@ int main(int argv, char *_args[])
     QTranslator translator;
     translator.load("guzum_" + Guzum::Config::uiLang(), Guzum::Config::uiLangsPath());
     app.installTranslator(&translator);
-    app.setQuitOnLastWindowClosed(true);
 
     // parse command line to determine what to do
     // available command line keys:
@@ -44,6 +43,7 @@ int main(int argv, char *_args[])
     EncryptedTextWindow * textWindow = 0;
 
     if (args.length() == 2) {
+        app.setQuitOnLastWindowClosed(false);
         if (args[1] == "--tray") {
             // launch in tray icon mode
             qDebug() << "tray icon mode";
@@ -59,6 +59,7 @@ int main(int argv, char *_args[])
             // treat args[1] as a filename
             // we need to check is file exists and create viewer window
             // init settings: display file mode
+            app.setQuitOnLastWindowClosed(true);
             Guzum::Config::initSettings("guzum.ini");
             qDebug() << "load file contents mode";
             QFileInfo fi(args[1]);

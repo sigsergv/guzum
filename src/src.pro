@@ -6,7 +6,9 @@ HEADERS += settings.h \
     gpgmewrapper.h \
     passphrasedialog.h \
     traymanager.h \
-    traymenuadaptor.h
+    traymenuadaptor.h \
+    aboutdialog.h \
+    prefsdialog.h
 
 SOURCES += main.cpp \
     settings.cpp \
@@ -14,9 +16,13 @@ SOURCES += main.cpp \
     gpgmewrapper.cpp \
     passphrasedialog.cpp \
     traymanager.cpp \
-    traymenuadaptor.cpp
+    traymenuadaptor.cpp \
+    aboutdialog.cpp \
+    prefsdialog.cpp
 
-FORMS += passphrasedialog.ui
+FORMS += passphrasedialog.ui \
+    prefsdialog.ui \
+    aboutdialog.ui
 
 CODECFORTR = UTF-8
 TRANSLATIONS = ../translations/guzum_ru.ts

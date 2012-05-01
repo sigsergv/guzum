@@ -23,6 +23,8 @@ protected slots:
     void quit();
     void appendFile(const QString & filename, const QString & gnupgHome);
     void openFilename();
+    void setPreferences();
+    void showAboutDialog();
     void menuHovered(QAction * action);
 
 protected:

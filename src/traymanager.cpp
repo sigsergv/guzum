@@ -9,6 +9,8 @@
 #include <QtGui>
 
 #include "traymanager.h"
+#include "prefsdialog.h"
+#include "aboutdialog.h"
 #include "settings.h"
 
 #define TRAY_FILENAMES_LIST_SIZE_LIMIT 10
@@ -31,12 +33,21 @@ TrayManager::TrayManager(QObject * parent)
     p->trayMenu = new QMenu();
 
     // create actions
+    QAction * prefsAction = new QAction(tr("&Preferences…"), this);
+    QAction * aboutAction = new QAction(tr("&About Guzum"), this);
     QAction * quitAction = new QAction(tr("&Quit Guzum"), this);
 
+    // create menu items
     p->filenamesSeparatorAction = p->trayMenu->addSeparator();
+    p->trayMenu->addAction(prefsAction);
+    p->trayMenu->addAction(aboutAction);
     p->trayMenu->addAction(quitAction);
 
     // connect signals
+    connect(prefsAction, SIGNAL(triggered()),
+            this, SLOT(setPreferences()));
+    connect(aboutAction, SIGNAL(triggered()),
+            this, SLOT(showAboutDialog()));
     connect(quitAction, SIGNAL(triggered()),
             this, SLOT(quit()));
     
@@ -130,6 +141,18 @@ void TrayManager::openFilename()
     args << filename;
      
     QProcess::startDetached(app, args);
+}
+
+void TrayManager::setPreferences()
+{
+    PrefsDialog dlg;
+    dlg.exec();
+}
+
+void TrayManager::showAboutDialog()
+{
+    AboutDialog dlg;
+    dlg.exec();
 }
 
 void TrayManager::menuHovered(QAction * action)
