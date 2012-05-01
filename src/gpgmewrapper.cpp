@@ -146,7 +146,7 @@ void GPGME::setError(GPGME_Error error, bool wrapperError)
 }
 
 
-QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget * parent)
+QByteArray GPGME::decryptFile(const QString & filename, QString & keyId, QWidget * parent)
 {
     setError(GPG_ERR_NO_ERROR); // clear error
     CallbackData cbData;
@@ -190,7 +190,6 @@ QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget *
     if (err != GPG_ERR_NO_ERROR) {
         gpgme_data_release(data);
         gpgme_data_release(plain);
-        qDebug() << "aaaaaaaaa";
         setError(err);
         return QByteArray();
     }
@@ -219,7 +218,7 @@ QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget *
     if (decrypt_res) {
         recipient = decrypt_res->recipients;
         while (recipient) {
-            uid = recipient->keyid;
+            keyId = recipient->keyid;
             recipient = recipient->next;
             break; // just ignore the other recipients
         }
@@ -227,7 +226,7 @@ QByteArray GPGME::decryptFile(const QString & filename, QString & uid, QWidget *
     return resBytes;
 }
 
-void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename, const QString & uid)
+void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename, const QString & keyId)
 {
     setError(GPG_ERR_NO_ERROR); // clear error
     qDebug() << "Encrypt data to file" << filename;
@@ -240,18 +239,28 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     }
 
     // list all available keys and find the appropriate
-    err = gpgme_op_keylist_start(p->context, uid.toAscii().data(), 0);
+    err = gpgme_op_keylist_start(p->context, keyId.toAscii().data(), 0);
     gpgme_key_t key = 0;
+    gpgme_key_t loop_key = 0;
+    int foundCount = 0;
 
     while (1) {
-        err = gpgme_op_keylist_next(p->context, &key);
-        if (err == GPG_ERR_NO_ERROR) {
-            // key found
-            qDebug() << "KEY FOUND";
+        err = gpgme_op_keylist_next(p->context, &loop_key);
+        if (err != GPG_ERR_NO_ERROR) {
+            break;
         }
-        break; // take just one key
+        qDebug() << "KEY FOUND";
+        if (loop_key != 0) {
+            key = loop_key;
+        }
+        foundCount++;
     }
     gpgme_op_keylist_end(p->context);
+
+    if (foundCount > 1) {
+        setError(GPGME_WRAPPER_ERR_MORE_THAN_ONE_KEY_FOUND);
+        return;
+    }
 
     if (key == 0) {
         // key not found
@@ -260,6 +269,10 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     }
 
     // if filename ends with ".asc" then use armored output, otherwise use binary
+    if (filename.toLower().endsWith(".asc")) {
+        // use armored output
+        gpgme_set_armor(p->context, 1);
+    }
 
     gpgme_data_t cipher;
     gpgme_data_t plain;

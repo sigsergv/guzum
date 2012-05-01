@@ -223,6 +223,10 @@ void EncryptedTextWindow::saveFile()
             errorMessage = tr("Cannot backup encrypted file, it's too large.");
             break;
 
+        case GPGME_WRAPPER_ERR_MORE_THAN_ONE_KEY_FOUND:
+            errorMessage = tr("More than one key found for key ID “%1”").arg(p->gpgUid);
+            break;
+
         case GPG_ERR_UNUSABLE_PUBKEY:
             errorMessage = tr("Unusable public key (maybe expired or revoked)");
             break;

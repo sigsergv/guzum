@@ -20,6 +20,7 @@ typedef enum {
     GPGME_WRAPPER_ERR_CANNOT_FIND_KEY,
     GPGME_WRAPPER_ERR_FILE_TOO_LARGE,
     GPGME_WRAPPER_ERR_DATA_TOO_LARGE,
+    GPGME_WRAPPER_ERR_MORE_THAN_ONE_KEY_FOUND,
 
     GPGME_WRAPPER_ERR_DIM // this code must be last in the list
 
@@ -33,8 +34,8 @@ public:
     static GPGME_Error init();
     GPGME_Error error();
 
-    QByteArray decryptFile(const QString & filename, QString & uid, QWidget * parent = 0);
-    void encryptBytesToFile(const QByteArray & data, const QString & filename, const QString & uid);
+    QByteArray decryptFile(const QString & filename, QString & keyId, QWidget * parent = 0);
+    void encryptBytesToFile(const QByteArray & data, const QString & filename, const QString & keyId);
 
     QString gpgHomeDir();
     
