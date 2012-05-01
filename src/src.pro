@@ -27,7 +27,7 @@ FORMS += passphrasedialog.ui \
 CODECFORTR = UTF-8
 TRANSLATIONS = ../translations/guzum_ru.ts
 
-QT += network dbus
+QT += dbus
 
 RESOURCES = ../resources/application.qrc
 TARGET = guzum
