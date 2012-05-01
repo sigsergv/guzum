@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Guzum
+GenericName=Guzum: gpg encrypted text files editor
+GenericName[ru]=Guzum: редактор зашифрованных gpg файлов
+Comment=Easily view and edit text files encrypted with GnuPG
+Comment[ru]=Лёгкий просмотр и редактирование файлов, зашифрованных GnuPG
+Type=Application
+Icon=guzum
+Categories=Editors;
+Exec=guzum
+
+
