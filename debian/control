@@ -2,7 +2,7 @@ Source: guzum
 Section: editors
 Priority: optional
 Maintainer: Sergei Stolyarov <sergei.stolyarov@regolit.com>
-Build-Depends: debhelper (>= 7), libqt4-dev
+Build-Depends: debhelper (>= 7), libqt4-dev, libgpgme11-dev
 Standards-Version: 3.9.3
 Homepage: https://bitbucket.org/cancel/guzum
 Vcs-Hg: https://bitbucket.org/cancel/guzum
