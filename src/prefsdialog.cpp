@@ -38,7 +38,7 @@ PrefsDialog::PrefsDialog(QWidget * parent, Qt::WindowFlags f)
     // detect is guzum in autostart mode: check file "~/.config/autostart/guzum.desktop"
     QDir homeDir = QDir::home();
     
-    // try to create dir, don't check
+    // try to create dir, check later
     QString path = ".config/autostart";
     homeDir.mkpath(path);
     if (homeDir.exists(path)) {
@@ -52,6 +52,8 @@ PrefsDialog::PrefsDialog(QWidget * parent, Qt::WindowFlags f)
             guzumDesktopFile.close();
 
             if (existingAutostartDesktop == p->autorunDesktop) {
+                // simple check: assume autoload is enabled if target .desktop file
+                // is exactly the same as we created a few sourcelines ago
                 p->ui.autoStartCheckbox->setChecked(true);
             }
         }

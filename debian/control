@@ -1,0 +1,17 @@
+Source: guzum
+Section: editors
+Priority: optional
+Maintainer: Sergei Stolyarov <sergei.stolyarov@regolit.com>
+Build-Depends: debhelper (>= 7), libqt4-dev
+Standards-Version: 3.9.3
+Homepage: https://bitbucket.org/cancel/guzum
+Vcs-Hg: https://bitbucket.org/cancel/guzum
+Vcs-Browser: https://bitbucket.org/cancel/guzum/src
+
+Package: guzum
+Architecture: any
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Description: GnuPG encrypted text files viewer and editor
+ Allows basic operations on gpg-encrypted files, also provides
+ notificaion area icons with most recently opened files.
