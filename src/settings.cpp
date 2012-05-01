@@ -7,7 +7,6 @@
 
 #include <QtCore>
 #include <QtDebug>
-#include <QWebSecurityOrigin>
 
 #include "settings.h"
 
