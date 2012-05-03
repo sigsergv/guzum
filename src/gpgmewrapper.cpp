@@ -272,6 +272,7 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     if (filename.toLower().endsWith(".asc")) {
         // use armored output
         gpgme_set_armor(p->context, 1);
+        qDebug() << "Encode: use armored output";
     }
 
     gpgme_data_t cipher;
@@ -308,13 +309,14 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     keys[0] = key;
     keys[1] = 0;
 
-    err = gpgme_op_encrypt(p->context, keys, static_cast<gpgme_encrypt_flags_t>(0), plain, cipher);
+    err = gpgme_op_encrypt(p->context, keys, static_cast<gpgme_encrypt_flags_t>(GPGME_ENCRYPT_ALWAYS_TRUST), plain, cipher);
     if (err != GPG_ERR_NO_ERROR) {
         // revert file contents in case of error
         file.resize(0);
         file.write(cipherBackup);
         setError(err);
     }
+    file.close();
 }
 
 

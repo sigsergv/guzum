@@ -13,6 +13,7 @@
 #include "encryptedtextwindow.h"
 #include "settings.h"
 #include "gpgmewrapper.h"
+#include "aboutdialog.h"
 
 struct EncryptedTextWindow::Private
 {
@@ -191,7 +192,8 @@ bool EncryptedTextWindow::show()
 
 void EncryptedTextWindow::showAboutDialog()
 {
-    qDebug() << "showAboutDialog()";
+    AboutDialog dlg(this);
+    dlg.exec();
 }
 
 void EncryptedTextWindow::saveFile()
@@ -239,7 +241,7 @@ void EncryptedTextWindow::saveFile()
             errorMessage = tr("Unknown error: %1").arg(gpg->error());
         }
         if (!errorMessage.isEmpty()) {
-            QMessageBox::critical(0, tr("Decryption failed"), errorMessage);
+            QMessageBox::critical(0, tr("Encryption failed"), errorMessage);
         }
     } else {
         // file is successfully written so change editor modification state
