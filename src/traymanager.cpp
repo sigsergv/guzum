@@ -10,6 +10,7 @@
 
 #include "traymanager.h"
 #include "prefsdialog.h"
+#include "managehistorydialog.h"
 #include "aboutdialog.h"
 #include "settings.h"
 
@@ -33,17 +34,22 @@ TrayManager::TrayManager(QObject * parent)
     p->trayMenu = new QMenu();
 
     // create actions
+    QAction * manageHistoryAction = new QAction(tr("&Manage history"), this);
     QAction * prefsAction = new QAction(tr("&Preferences…"), this);
     QAction * aboutAction = new QAction(tr("&About Guzum"), this);
     QAction * quitAction = new QAction(tr("&Quit Guzum"), this);
 
     // create menu items
     p->filenamesSeparatorAction = p->trayMenu->addSeparator();
+    p->trayMenu->addAction(manageHistoryAction);
+    p->trayMenu->addSeparator();
     p->trayMenu->addAction(prefsAction);
     p->trayMenu->addAction(aboutAction);
     p->trayMenu->addAction(quitAction);
 
     // connect signals
+    connect(manageHistoryAction, SIGNAL(triggered()),
+            this, SLOT(manageHistory()));
     connect(prefsAction, SIGNAL(triggered()),
             this, SLOT(setPreferences()));
     connect(aboutAction, SIGNAL(triggered()),
@@ -60,29 +66,7 @@ TrayManager::TrayManager(QObject * parent)
     p->trayIcon->setContextMenu(p->trayMenu);
     p->trayIcon->show();
 
-    QSettings * settings = Guzum::Config::settings();
-    settings->beginGroup("TrayMenuItems");
-    Q_FOREACH (const QString key, settings->allKeys()) {
-        QVariant v = settings->value(key);
-        if (v.canConvert< QHash<QString, QVariant> >()) {
-            QHash<QString, QVariant> value = v.toHash();
-            if (value.contains("filename")) {
-                QVariant vf = value["filename"];
-                QStringsHash item;
-
-                if (vf.canConvert<QString>()) {
-                    item["filename"] = vf.toString();
-                }
-                item["gnupghome"] = QString();
-                if (value.contains("gnupghome") && value["gnupghome"].canConvert<QString>()) {
-                    // this is a path to gnupg data directory
-                    item["gnupghome"] = value["gnupghome"].toString();
-                }
-                p->trayFilenames << item;
-            }
-        }
-    }
-    settings->endGroup();
+    reloadFilenames();
     rebuildFilenamesMenu();
 }
 
@@ -155,6 +139,14 @@ void TrayManager::showAboutDialog()
     dlg.exec();
 }
 
+void TrayManager::manageHistory()
+{
+    ManageHistoryDialog dlg;
+    dlg.exec();
+    reloadFilenames();
+    rebuildFilenamesMenu();
+}
+
 void TrayManager::menuHovered(QAction * action)
 {
     // find action first
@@ -186,6 +178,36 @@ void TrayManager::dumpFilenames()
     }
     settings->endGroup();
     settings->sync();
+}
+
+void TrayManager::reloadFilenames()
+{
+    p->trayFilenames.clear();
+
+    QSettings * settings = Guzum::Config::settings();
+    settings->beginGroup("TrayMenuItems");
+    Q_FOREACH (const QString key, settings->allKeys()) {
+        QVariant v = settings->value(key);
+        if (v.canConvert< QHash<QString, QVariant> >()) {
+            QHash<QString, QVariant> value = v.toHash();
+            if (value.contains("filename")) {
+                QVariant vf = value["filename"];
+                QStringsHash item;
+
+                if (vf.canConvert<QString>()) {
+                    item["filename"] = vf.toString();
+                }
+                item["gnupghome"] = QString();
+                if (value.contains("gnupghome") && value["gnupghome"].canConvert<QString>()) {
+                    // this is a path to gnupg data directory
+                    item["gnupghome"] = value["gnupghome"].toString();
+                }
+                p->trayFilenames << item;
+            }
+        }
+    }
+    settings->endGroup();
+
 }
 
 void TrayManager::rebuildFilenamesMenu()

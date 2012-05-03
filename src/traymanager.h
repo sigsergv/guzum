@@ -25,11 +25,13 @@ protected slots:
     void openFilename();
     void setPreferences();
     void showAboutDialog();
+    void manageHistory();
     void menuHovered(QAction * action);
 
 protected:
     void dumpFilenames();
     void rebuildFilenamesMenu();
+    void reloadFilenames();
 
 private:
     struct Private;

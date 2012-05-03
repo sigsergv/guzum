@@ -3,3 +3,4 @@
 
 * fixed ecnryption error in case key is not trusted
 * added aboud dialog to editor
+* added notification area history items management dialog (edit, reorder, delete)

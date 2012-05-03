@@ -8,7 +8,8 @@ HEADERS += settings.h \
     traymanager.h \
     traymenuadaptor.h \
     aboutdialog.h \
-    prefsdialog.h
+    prefsdialog.h \
+    managehistorydialog.h
 
 SOURCES += main.cpp \
     settings.cpp \
@@ -18,11 +19,13 @@ SOURCES += main.cpp \
     traymanager.cpp \
     traymenuadaptor.cpp \
     aboutdialog.cpp \
-    prefsdialog.cpp
+    prefsdialog.cpp \
+    managehistorydialog.cpp
 
 FORMS += passphrasedialog.ui \
     prefsdialog.ui \
-    aboutdialog.ui
+    aboutdialog.ui \
+    managehistorydialog.ui
 
 CODECFORTR = UTF-8
 TRANSLATIONS = ../translations/guzum_ru.ts
