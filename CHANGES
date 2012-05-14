@@ -1,6 +1,12 @@
-1.1.0
-=====
+1.2
+===
+
+* added file selector, just launch program without arguments
+* translation fixes
+
+1.1
+===
 
 * fixed ecnryption error in case key is not trusted
-* added aboud dialog to editor
+* added about dialog to editor
 * added notification area history items management dialog (edit, reorder, delete)
