@@ -1,0 +1,5 @@
+Planned features
+================
+
+* Display file selector dialog when executing ``guzum`` without any arguments.
+** (remember last used dir in that case)
