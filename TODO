@@ -3,3 +3,8 @@ Planned features
 
 * Display file selector dialog when executing ``guzum`` without any arguments.
 ** (remember last used dir in that case)
+* Create new encrypted files
+** Automatically select public key for existing secret key
+** Display key selection dialog if there is more than one secret key available.
+* UI language selector in preferences
+
