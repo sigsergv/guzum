@@ -19,6 +19,34 @@
 #include "traymanager.h"
 #include "traymenuadaptor.h"
 
+enum Mode {ModeNone, ModeEditFile, ModeTrayService} ;
+
+int startFileEdit(QString filename)
+{
+    EncryptedTextWindow * textWindow;
+    QFileInfo fi(filename);
+    if (!fi.exists()) {
+        QMessageBox::critical(0, EncryptedTextWindow::tr("Error"), 
+                EncryptedTextWindow::tr("File `%1' not found").arg(filename));
+        return 1;
+    }
+    filename = fi.canonicalFilePath();
+    textWindow = new EncryptedTextWindow(filename);
+
+    // init gpgme
+    GPGME_Error err = GPGME::init();
+    if (err != GPG_ERR_NO_ERROR) {
+        QMessageBox::critical(0, EncryptedTextWindow::tr("Error"),
+                EncryptedTextWindow::tr("Cannot initialize GPG backend"));
+        return 1;
+    }
+    QApplication::setActiveWindow(textWindow);
+    if (!textWindow->show()) {
+        return 1;
+    }
+    return 0;
+}
+
 int main(int argv, char *_args[])
 {
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
@@ -35,58 +63,78 @@ int main(int argv, char *_args[])
     // --tray : start as tray icon (prevent multiple instances)
     // filepath : open file in the editor
     QStringList args = QCoreApplication::arguments();
-    if (args.length() == 1) {
-        // TODO: display file selector
-        return 0;
-    }
 
-    EncryptedTextWindow * textWindow = 0;
+    QString editFilename;
+    Mode mode = ModeNone;
 
     if (args.length() == 2) {
         app.setQuitOnLastWindowClosed(false);
         if (args[1] == "--tray") {
-            // launch in tray icon mode
-            qDebug() << "tray icon mode";
-            // init settings: tray icon mode
-            Guzum::Config::initSettings("icon.ini");
-            TrayManager * tray = new TrayManager();
-
-            new TrayMenuAdaptor(tray);
-            QDBusConnection connection = QDBusConnection::sessionBus();
-            connection.registerObject("/Tray", tray);
-            connection.registerService("com.regolit.guzum.tray");
+            mode = ModeTrayService;
         } else {
-            // treat args[1] as a filename
-            // we need to check is file exists and create viewer window
-            // init settings: display file mode
-            app.setQuitOnLastWindowClosed(true);
             Guzum::Config::initSettings("guzum.ini");
-            qDebug() << "load file contents mode";
-            QFileInfo fi(args[1]);
-            if (!fi.exists()) {
-                QMessageBox::critical(0, EncryptedTextWindow::tr("Error"), 
-                        EncryptedTextWindow::tr("File `%1' not found").arg(args[1]));
-                return 1;
-            }
-            QString filename = fi.canonicalFilePath();
-            textWindow = new EncryptedTextWindow(filename);
+            mode = ModeEditFile; 
+            editFilename = args[1];
         }
+    } else if (args.length() == 1) {
+        // show file selector
+        Guzum::Config::initSettings("guzum.ini");
+        // read last used dir name from the settings
+        QSettings * settings = Guzum::Config::settings();
+        settings->beginGroup("EditFileSelector");
+        QString initDir = settings->value("init-dir").toString();
+        settings->endGroup();
+
+        if (initDir.isEmpty()) {
+            initDir = QDir::homePath();
+        }
+        editFilename = QFileDialog::getOpenFileName(0, EncryptedTextWindow::tr("Select file encrypted by Gnupg"), 
+            initDir,
+            EncryptedTextWindow::tr("Encrypted files (*.gpg, *.asc) (*.gpg *.asc);;All files (*.*)"), 
+            0, 0);
+        if (editFilename.isEmpty()) {
+            return 0;
+        }
+        // remember last used directory
+        QFileInfo fi(editFilename);
+        settings->beginGroup("EditFileSelector");
+        settings->setValue("init-dir", fi.canonicalPath());
+        settings->endGroup();
+        settings->sync();
+        mode = ModeEditFile;
     }
 
-    if (textWindow) {
-        // init gpgme
-        GPGME_Error err = GPGME::init();
-        if (err != GPG_ERR_NO_ERROR) {
-            QMessageBox::critical(0, EncryptedTextWindow::tr("Error"),
-                    EncryptedTextWindow::tr("Cannot initialize GPG backend"));
-            return 1;
+    switch (mode) {
+    case ModeEditFile: {
+        // treat args[1] as a filename
+        // we need to check is file exists and create viewer window
+        // init settings: display file mode
+        app.setQuitOnLastWindowClosed(true);
+        qDebug() << "load file contents mode";
+        int res = startFileEdit(editFilename);
+        if (res != 0) {
+            return res;
         }
-        QApplication::setActiveWindow(textWindow);
-        if (!textWindow->show()) {
-            return 1;
-        }
-    }
+        };
+        break;
 
+    case ModeTrayService: {
+        // launch in tray icon mode
+        qDebug() << "tray icon mode";
+        // init settings: tray icon mode
+        Guzum::Config::initSettings("icon.ini");
+        TrayManager * tray = new TrayManager();
+
+        new TrayMenuAdaptor(tray);
+        QDBusConnection connection = QDBusConnection::sessionBus();
+        connection.registerObject("/Tray", tray);
+        connection.registerService("com.regolit.guzum.tray");
+        };
+        break;
+
+    default:
+        return 0;
+    }
 
     /*
     QSqlError se = Guzum::Db::init();
