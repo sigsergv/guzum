@@ -7,4 +7,5 @@ Planned features
 ** Automatically select public key for existing secret key
 ** Display key selection dialog if there is more than one secret key available.
 * UI language selector in preferences
-
+* add password generator to GUI editor
+* turn off debug mode in release version
