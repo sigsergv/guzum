@@ -11,6 +11,7 @@
 #include <QMainWindow>
 
 struct QString;
+struct QEvent;
 
 class EncryptedTextWindow : public QMainWindow
 {
@@ -34,12 +35,14 @@ protected slots:
     void changeDefaultFont();
     void insertRandomString();
     void editorModificationChanged(bool changed);
+    void closeTimerTick();
 
 protected:
     void rememberGeometryAndState();
     void moveEvent(QMoveEvent * event);
     void resizeEvent(QResizeEvent * event);
     void closeEvent(QCloseEvent * event);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif // _ENCRYPTEDTEXTWINDOW_H_

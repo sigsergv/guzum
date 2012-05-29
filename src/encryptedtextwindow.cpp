@@ -23,9 +23,13 @@ struct EncryptedTextWindow::Private
     QToolBar * topToolBar;
     QString gpgUid; // UID for encrypting/decrypting
     QAction * saveAction;
+    QLabel * timerLabel;
+    QTimer * autoCloseTimer;
+    unsigned int autoCloseCounter;
 };
 
 static const QString RND_CHARACTERS_SET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+static unsigned int AUTO_CLOSE_TIMEOUT = 600; // in seconds
 
 EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * parent)
     : QMainWindow(parent)
@@ -33,6 +37,12 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     p = new Private;
     QFileInfo fi(filename);
     p->filename = fi.canonicalFilePath();
+
+    p->autoCloseTimer = new QTimer(this);
+    p->autoCloseTimer->setInterval(1000);
+    p->autoCloseTimer->setSingleShot(false);
+
+    p->autoCloseCounter = AUTO_CLOSE_TIMEOUT;
 
     setWindowTitle(QString("%1 [guzum]").arg(fi.fileName()));
 
@@ -56,6 +66,12 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     saveAction->setDisabled(true);
 
     // create widgets
+    p->timerLabel = new QLabel("00:00");
+    QFont font = p->timerLabel->font();
+    font.setBold(true);
+    p->timerLabel->setFont(font);
+    p->timerLabel->setToolTip(tr("Time remaining to automatical window close"));
+
     p->editor = new QPlainTextEdit(this);
     //layout()->addWidget(p->editor);
     setCentralWidget(p->editor);
@@ -76,6 +92,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
             this, SLOT(editorModificationChanged(bool)));
     connect(insertRandomStringAction, SIGNAL(triggered()),
             this, SLOT(insertRandomString()));
+    connect(p->autoCloseTimer, SIGNAL(timeout()),
+            this, SLOT(closeTimerTick()));
 
     // add basic control elements: top toolbar (fixed, not movable/resizeable), buttons on that toolbar, mainmenu
     QMenu * fileMenu = menuBar()->addMenu(tr("&File"));
@@ -94,6 +112,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     p->topToolBar->addAction(changeCurrentFontAction);
     p->topToolBar->addSeparator();
     p->topToolBar->addAction(insertRandomStringAction);
+    p->topToolBar->addSeparator();
+    p->topToolBar->addWidget(p->timerLabel);
     addToolBar(p->topToolBar);
     
     // try to restore window settings
@@ -118,6 +138,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     }
 
     p->saveAction = saveAction;
+
+    p->editor->installEventFilter(this);
 }
 
 EncryptedTextWindow::~EncryptedTextWindow()
@@ -295,6 +317,32 @@ void EncryptedTextWindow::insertRandomString()
     p->editor->insertPlainText(rnd);
 }
 
+void EncryptedTextWindow::closeTimerTick()
+{
+    p->autoCloseCounter--;
+
+    if (p->autoCloseCounter <= 0) {
+        qDebug() << "force window close";
+    } else {
+        // update counter
+        unsigned int s = p->autoCloseCounter;
+        QString time;
+        unsigned int seconds = s % 60;
+        s /= 60;
+        unsigned int minutes = s % 60;
+        s /= 60;
+        unsigned int hours = s;
+
+        time = QString("%1").arg(seconds, 2, 10, QLatin1Char('0'));
+        time = QString("%1:").arg(minutes, 2, 10, QLatin1Char('0')) + time;
+        if (hours > 0) {
+            time = QString("%1:").arg(hours, 2, 10, QLatin1Char('0')) + time;
+        }
+
+        p->timerLabel->setText(time);
+    }
+}
+
 void EncryptedTextWindow::editorModificationChanged(bool changed)
 {
     if (changed) {
@@ -342,3 +390,19 @@ void EncryptedTextWindow::closeEvent(QCloseEvent *event)
 }
 
 
+bool EncryptedTextWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == p->editor) {
+        if (event->type() == QEvent::FocusOut) {
+            p->autoCloseCounter = AUTO_CLOSE_TIMEOUT;
+            p->autoCloseTimer->start();
+        } else if (event->type() == QEvent::FocusIn) {
+            // stop timer
+            p->autoCloseTimer->stop();
+            p->autoCloseCounter = AUTO_CLOSE_TIMEOUT + 1;
+            closeTimerTick();
+        }
+        
+    }
+    return QObject::eventFilter(obj, event);
+}
