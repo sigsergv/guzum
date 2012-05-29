@@ -5,6 +5,7 @@
   <file alias="guzum-48.png">icons/48x48/Guzum.png</file>
   <file alias="text-22x22.png">icons/22x22/draw-text.png</file>
   <file alias="save-22x22.png">icons/22x22/document-save.png</file>
+  <file alias="insert-text-22x22.png">icons/22x22/insert-text.png</file>
   <file alias="guzum-template.desktop">text/guzum.desktop</file>
 
 </qresource>

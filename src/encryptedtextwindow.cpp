@@ -25,6 +25,7 @@ struct EncryptedTextWindow::Private
     QAction * saveAction;
 };
 
+static const QString RND_CHARACTERS_SET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * parent)
     : QMainWindow(parent)
@@ -49,6 +50,7 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     QAction * saveAction = new QAction(QIcon(":/save-22x22.png"), tr("&Save file"), this);
     QAction * changeCurrentFontAction = new QAction(QIcon(":/text-22x22.png"), tr("Change current font"), this);
     QAction * changeDefaultFontAction = new QAction(tr("Set default &font"), this);
+    QAction * insertRandomStringAction = new QAction(QIcon(":/insert-text-22x22.png"), tr("Insert random string in the caret position"), this);
 
     saveAction->setShortcut(QKeySequence(Qt::Key_S + Qt::CTRL));
     saveAction->setDisabled(true);
@@ -72,6 +74,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
             this, SLOT(changeDefaultFont()));
     connect(p->editor, SIGNAL(modificationChanged(bool)),
             this, SLOT(editorModificationChanged(bool)));
+    connect(insertRandomStringAction, SIGNAL(triggered()),
+            this, SLOT(insertRandomString()));
 
     // add basic control elements: top toolbar (fixed, not movable/resizeable), buttons on that toolbar, mainmenu
     QMenu * fileMenu = menuBar()->addMenu(tr("&File"));
@@ -88,6 +92,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     // add actions to the toolbar
     p->topToolBar->addAction(saveAction);
     p->topToolBar->addAction(changeCurrentFontAction);
+    p->topToolBar->addSeparator();
+    p->topToolBar->addAction(insertRandomStringAction);
     addToolBar(p->topToolBar);
     
     // try to restore window settings
@@ -276,6 +282,17 @@ void EncryptedTextWindow::changeDefaultFont()
         settings->setValue("font", font);
         settings->endGroup();
     }
+}
+
+void EncryptedTextWindow::insertRandomString()
+{
+    QString rnd;
+    int len = RND_CHARACTERS_SET.length();
+
+    for (int i=0; i<10; i++) {
+        rnd += RND_CHARACTERS_SET[qrand() % len];
+    }
+    p->editor->insertPlainText(rnd);
 }
 
 void EncryptedTextWindow::editorModificationChanged(bool changed)
