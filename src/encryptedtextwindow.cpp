@@ -19,6 +19,7 @@ struct EncryptedTextWindow::Private
 {
     QString filename;
     QString filenameHash;
+    QString windowTitleBase;
     QPlainTextEdit * editor;
     QToolBar * topToolBar;
     QString gpgUid; // UID for encrypting/decrypting
@@ -44,7 +45,8 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
 
     p->autoCloseCounter = AUTO_CLOSE_TIMEOUT;
 
-    setWindowTitle(QString("%1 [guzum]").arg(fi.fileName()));
+    p->windowTitleBase = QString("%1 [guzum]").arg(fi.fileName());
+    setWindowTitle(p->windowTitleBase);
 
     // compute filename hashsum, it's used for storing settings for example
     QCryptographicHash h(QCryptographicHash::Sha1);
@@ -322,7 +324,8 @@ void EncryptedTextWindow::closeTimerTick()
     p->autoCloseCounter--;
 
     if (p->autoCloseCounter <= 0) {
-        qDebug() << "force window close";
+        p->autoCloseTimer->stop();
+        close();
     } else {
         // update counter
         unsigned int s = p->autoCloseCounter;
@@ -340,6 +343,9 @@ void EncryptedTextWindow::closeTimerTick()
         }
 
         p->timerLabel->setText(time);
+
+        // also update window title
+        setWindowTitle(QString("[%1] %2").arg(time).arg(p->windowTitleBase));
     }
 }
 
@@ -401,6 +407,7 @@ bool EncryptedTextWindow::eventFilter(QObject *obj, QEvent *event)
             p->autoCloseTimer->stop();
             p->autoCloseCounter = AUTO_CLOSE_TIMEOUT + 1;
             closeTimerTick();
+            setWindowTitle(p->windowTitleBase);
         }
         
     }
