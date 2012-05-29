@@ -10,4 +10,3 @@ Planned features
 * add password generator to GUI editor
 * turn off debug mode in release version
 * auto-close timer
-* random characters generator (for passwords for example)
