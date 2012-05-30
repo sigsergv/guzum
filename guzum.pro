@@ -9,13 +9,12 @@ isEmpty(PREFIX) {
 
 DATADIR =$$PREFIX/share
 
-update-translations.commands = lupdate src/src.pro
-compile-translations.commands = lrelease src/src.pro
-QMAKE_EXTRA_TARGETS = update-translations compile-translations
+update_translations.commands = lupdate $$PWD/src/src.pro
+compile_translations.commands = lrelease $$PWD/src/src.pro
+QMAKE_EXTRA_TARGETS = update_translations compile_translations
 
-translations.depends = compile-translations
+translations.depends = compile_translations
 translations.path = $$DATADIR/guzum/translations
 translations.files = translations/*.qm
-#make_default.depends += compile-translations
 
 INSTALLS += translations
