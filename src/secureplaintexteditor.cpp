@@ -35,6 +35,7 @@ void SecurePlainTextEditor::mouseDoubleClickEvent(QMouseEvent * e)
 
     int pos = cursor.position();
 
+    /*
     int end = pos;
     while (end < textLength) {
         end++;
@@ -42,6 +43,7 @@ void SecurePlainTextEditor::mouseDoubleClickEvent(QMouseEvent * e)
             break;
         }
     }
+    */
 
     int start = pos;
     while (start > 0) {
