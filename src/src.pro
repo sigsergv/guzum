@@ -38,7 +38,8 @@ DESTDIR = ../
 
 LIBS += -lgpgme
 
-CONFIG(release, debug|release) {
+CONFIG(release, release|debug) {
+    message(RELEASE)
     DEFINES += QT_NO_DEBUG_OUTPUT
 }
 
