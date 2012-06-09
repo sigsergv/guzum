@@ -9,7 +9,8 @@ HEADERS += settings.h \
     traymenuadaptor.h \
     aboutdialog.h \
     prefsdialog.h \
-    managehistorydialog.h
+    managehistorydialog.h \
+    secureplaintexteditor.h
 
 SOURCES += main.cpp \
     settings.cpp \
@@ -20,7 +21,8 @@ SOURCES += main.cpp \
     traymenuadaptor.cpp \
     aboutdialog.cpp \
     prefsdialog.cpp \
-    managehistorydialog.cpp
+    managehistorydialog.cpp \
+    secureplaintexteditor.cpp
 
 FORMS += passphrasedialog.ui \
     prefsdialog.ui \

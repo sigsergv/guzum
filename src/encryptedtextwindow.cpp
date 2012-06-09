@@ -14,13 +14,14 @@
 #include "settings.h"
 #include "gpgmewrapper.h"
 #include "aboutdialog.h"
+#include "secureplaintexteditor.h"
 
 struct EncryptedTextWindow::Private
 {
     QString filename;
     QString filenameHash;
     QString windowTitleBase;
-    QPlainTextEdit * editor;
+    SecurePlainTextEditor * editor;
     QToolBar * topToolBar;
     QString gpgUid; // UID for encrypting/decrypting
     QAction * saveAction;
@@ -74,7 +75,7 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     p->timerLabel->setFont(font);
     p->timerLabel->setToolTip(tr("Time remaining to automatical window close"));
 
-    p->editor = new QPlainTextEdit(this);
+    p->editor = new SecurePlainTextEditor(this);
     //layout()->addWidget(p->editor);
     setCentralWidget(p->editor);
     setFocusProxy(p->editor);
