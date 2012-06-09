@@ -108,6 +108,7 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     p->topToolBar = new QToolBar(this);
     p->topToolBar->setAllowedAreas(Qt::TopToolBarArea);
     p->topToolBar->setMovable(false);
+    p->topToolBar->setFloatable(false);
     p->topToolBar->setObjectName("MainToolbar");
     // add actions to the toolbar
     p->topToolBar->addAction(saveAction);
@@ -142,6 +143,7 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * par
     p->saveAction = saveAction;
 
     p->editor->installEventFilter(this);
+    p->topToolBar->installEventFilter(this);
 }
 
 EncryptedTextWindow::~EncryptedTextWindow()
@@ -398,7 +400,14 @@ void EncryptedTextWindow::closeEvent(QCloseEvent *event)
 
 bool EncryptedTextWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj == p->editor) {
+    if (obj == p->topToolBar) {
+        if (event->type() == QEvent::ContextMenu) {
+            QContextMenuEvent* mevent = static_cast<QContextMenuEvent *>(event);
+            if (mevent->reason() == QContextMenuEvent::Mouse) {
+                return true;
+            }
+        }
+    } else if (obj == p->editor) {
         if (event->type() == QEvent::FocusOut) {
             p->autoCloseCounter = AUTO_CLOSE_TIMEOUT;
             p->autoCloseTimer->start();
