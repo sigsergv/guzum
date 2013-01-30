@@ -19,6 +19,8 @@
 #include "traymanager.h"
 #include "traymenuadaptor.h"
 
+#include "iostream"
+
 enum Mode {ModeNone, ModeEditFile, ModeTrayService} ;
 
 int startFileEdit(QString filename)
@@ -47,6 +49,16 @@ int startFileEdit(QString filename)
     return 0;
 }
 
+void help(QString program)
+{
+    std::cout << "Usage:\n    " << program.toStdString() << " [args] [FILENAME]\n";
+    std::cout << "Arguments:\n";
+    std::cout << "    --help, -h   show this help\n";
+    std::cout << "    --tray       launch as icon in the notification area\n";
+    std::cout << "    --dialog     show file selection dialog";
+    std::cout << std::endl;
+}
+
 int main(int argv, char *_args[])
 {
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
@@ -67,16 +79,15 @@ int main(int argv, char *_args[])
     QString editFilename;
     Mode mode = ModeNone;
 
-    if (args.length() == 2) {
+    if (args.contains("-h") || args.contains("--help")) {
+        help(args[0]);
+        return 0;
+    }
+    if (args.contains("--tray")) {
+        mode = ModeTrayService;
         app.setQuitOnLastWindowClosed(false);
-        if (args[1] == "--tray") {
-            mode = ModeTrayService;
-        } else {
-            Guzum::Config::initSettings("guzum.ini");
-            mode = ModeEditFile; 
-            editFilename = args[1];
-        }
-    } else if (args.length() == 1) {
+    } else if (args.contains("--dialog")) {
+        mode = ModeEditFile;
         // show file selector
         Guzum::Config::initSettings("guzum.ini");
         // read last used dir name from the settings
@@ -101,7 +112,14 @@ int main(int argv, char *_args[])
         settings->setValue("init-dir", fi.canonicalPath());
         settings->endGroup();
         settings->sync();
-        mode = ModeEditFile;
+    } else if (args.length() == 2) {
+        mode = ModeEditFile; 
+        app.setQuitOnLastWindowClosed(false);
+        Guzum::Config::initSettings("guzum.ini");
+        editFilename = args[1];
+    } else {
+        help(args[0]);
+        exit(0);
     }
 
     switch (mode) {

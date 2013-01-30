@@ -1,4 +1,4 @@
-DEFINES += GUZUM_VERSION="\\\"1.2\\\""
+DEFINES += GUZUM_VERSION="\\\"1.3\\\""
 DEFINES += _FILE_OFFSET_BITS="64"
 
 HEADERS += settings.h \
