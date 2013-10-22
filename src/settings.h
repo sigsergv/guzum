@@ -27,6 +27,7 @@ namespace Config
     QString profilePath();
     QString filenameInProfile(const QString & filename);
     QString extUrlNamespace();
+    QString controlSocketPath();
 }
 }
 

@@ -27,7 +27,6 @@ namespace Config
         QCoreApplication::setOrganizationDomain("guzum.regolit.com");
 
         ::_settings = new QSettings(profilePath()+"/" + file, QSettings::IniFormat);
-    
     }
 
     QSettings * settings()
@@ -85,17 +84,20 @@ namespace Config
 
     QString profilePath()
     {
-        QDir dir;
+        QString configHome = qgetenv("XDG_CONFIG_HOME");
 
-        QString path = QDir::homePath() + "/.guzum";
-        if (!dir.exists(path) && !dir.mkpath(path)) {
-            // TODO: do something if it's not possible to create new directory
-            return QString();
+        if (configHome.size() == 0) {
+            configHome = QDir::homePath() + "/.config";
+        }
+        QDir configHomeDir(configHome);
+
+        if (!configHomeDir.exists("guzum")) {
+            // TODO: check return value
+            configHomeDir.mkpath("guzum");
         }
 
-        return path;
+        return configHome + "/guzum";
     }
-
 
 
     QString _cachePath(const QString & dirname)
@@ -134,6 +136,11 @@ namespace Config
     QString extUrlNamespace()
     {
         return "guzum.ns.regolit.com";
+    }
+
+    QString controlSocketPath()
+    {
+        return profilePath() + "/control_socket";
     }
 
 }

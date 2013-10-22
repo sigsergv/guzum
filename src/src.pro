@@ -6,11 +6,11 @@ HEADERS += settings.h \
     gpgmewrapper.h \
     passphrasedialog.h \
     traymanager.h \
-    traymenuadaptor.h \
     aboutdialog.h \
     prefsdialog.h \
     managehistorydialog.h \
-    secureplaintexteditor.h
+    secureplaintexteditor.h \
+    controlpeer.h
 
 SOURCES += main.cpp \
     settings.cpp \
@@ -18,11 +18,11 @@ SOURCES += main.cpp \
     gpgmewrapper.cpp \
     passphrasedialog.cpp \
     traymanager.cpp \
-    traymenuadaptor.cpp \
     aboutdialog.cpp \
     prefsdialog.cpp \
     managehistorydialog.cpp \
-    secureplaintexteditor.cpp
+    secureplaintexteditor.cpp \
+    controlpeer.cpp
 
 FORMS += passphrasedialog.ui \
     prefsdialog.ui \
@@ -32,7 +32,7 @@ FORMS += passphrasedialog.ui \
 CODECFORTR = UTF-8
 TRANSLATIONS = ../translations/guzum_ru.ts
 
-QT += dbus
+QT += network
 
 RESOURCES = ../resources/application.qrc
 TARGET = guzum

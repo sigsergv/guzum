@@ -10,52 +10,26 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QtNetwork>
 #include <QtDebug>
 #include <QtDBus/QDBusConnection>
 
 #include "settings.h"
 #include "encryptedtextwindow.h"
-#include "gpgmewrapper.h"
 #include "traymanager.h"
-#include "traymenuadaptor.h"
+#include "controlpeer.h"
 
 #include "iostream"
 
 enum Mode {ModeNone, ModeEditFile, ModeTrayService} ;
 
-int startFileEdit(QString filename)
-{
-    EncryptedTextWindow * textWindow;
-    QFileInfo fi(filename);
-    if (!fi.exists()) {
-        QMessageBox::critical(0, EncryptedTextWindow::tr("Error"), 
-                EncryptedTextWindow::tr("File `%1' not found").arg(filename));
-        return 1;
-    }
-    filename = fi.canonicalFilePath();
-    textWindow = new EncryptedTextWindow(filename);
-
-    // init gpgme
-    GPGME_Error err = GPGME::init();
-    if (err != GPG_ERR_NO_ERROR) {
-        QMessageBox::critical(0, EncryptedTextWindow::tr("Error"),
-                EncryptedTextWindow::tr("Cannot initialize GPG backend"));
-        return 1;
-    }
-    QApplication::setActiveWindow(textWindow);
-    if (!textWindow->show()) {
-        return 1;
-    }
-    return 0;
-}
-
 void help(QString program)
 {
     std::cout << "Usage:\n    " << program.toStdString() << " [args] [FILENAME]\n";
     std::cout << "Arguments:\n";
-    std::cout << "    --help, -h   show this help\n";
-    std::cout << "    --tray       launch as icon in the notification area\n";
-    std::cout << "    --dialog     show file selection dialog";
+    std::cout << "    --help, -h        show this help\n";
+    std::cout << "    --select-file     show file selection dialog\n";
+    std::cout << "    [FILENAME]        open this encrypted file in the editor\n";
     std::cout << std::endl;
 }
 
@@ -75,92 +49,44 @@ int main(int argv, char *_args[])
     // --tray : start as tray icon (prevent multiple instances)
     // filepath : open file in the editor
     QStringList args = QCoreApplication::arguments();
-
-    QString editFilename;
-    Mode mode = ModeNone;
+    Guzum::Config::initSettings("guzum.ini");
 
     if (args.contains("-h") || args.contains("--help")) {
         help(args[0]);
         return 0;
     }
-    if (args.contains("--tray")) {
-        mode = ModeTrayService;
-        app.setQuitOnLastWindowClosed(false);
-    } else if (args.contains("--dialog")) {
-        mode = ModeEditFile;
-        // show file selector
-        Guzum::Config::initSettings("guzum.ini");
-        // read last used dir name from the settings
-        QSettings * settings = Guzum::Config::settings();
-        settings->beginGroup("EditFileSelector");
-        QString initDir = settings->value("init-dir").toString();
-        settings->endGroup();
 
-        if (initDir.isEmpty()) {
-            initDir = QDir::homePath();
+    ControlPeer * controlPeer = new ControlPeer();
+
+    switch (controlPeer->mode()) {
+    case ControlPeer::ModeUndefined:
+        qWarning("Cannot initialize peer, terminating");
+        return 1;
+        break;
+
+    case ControlPeer::ModeClient:
+    case ControlPeer::ModeServer:
+        if (args.contains("--select-file")) {
+            controlPeer->showFileSelectorDialog();
+        } else if (args.length() == 2) {
+            controlPeer->editFile(args[1]);
         }
-        editFilename = QFileDialog::getOpenFileName(0, EncryptedTextWindow::tr("Select file encrypted by Gnupg"), 
-            initDir,
-            EncryptedTextWindow::tr("Encrypted files (*.gpg, *.asc) (*.gpg *.asc);;All files (*.*)"), 
-            0, 0);
-        if (editFilename.isEmpty()) {
-            return 0;
-        }
-        // remember last used directory
-        QFileInfo fi(editFilename);
-        settings->beginGroup("EditFileSelector");
-        settings->setValue("init-dir", fi.canonicalPath());
-        settings->endGroup();
-        settings->sync();
-    } else if (args.length() == 2) {
-        mode = ModeEditFile; 
-        app.setQuitOnLastWindowClosed(false);
-        Guzum::Config::initSettings("guzum.ini");
-        editFilename = args[1];
-    } else {
-        help(args[0]);
-        exit(0);
+        break;
     }
 
-    switch (mode) {
-    case ModeEditFile: {
-        // treat args[1] as a filename
-        // we need to check is file exists and create viewer window
-        // init settings: display file mode
-        app.setQuitOnLastWindowClosed(true);
-        qDebug() << "load file contents mode";
-        int res = startFileEdit(editFilename);
-        if (res != 0) {
-            return res;
-        }
-        };
-        break;
-
-    case ModeTrayService: {
-        // launch in tray icon mode
-        qDebug() << "tray icon mode";
-        // init settings: tray icon mode
-        Guzum::Config::initSettings("icon.ini");
-        TrayManager * tray = new TrayManager();
-
-        new TrayMenuAdaptor(tray);
-        QDBusConnection connection = QDBusConnection::sessionBus();
-        connection.registerObject("/Tray", tray);
-        connection.registerService("com.regolit.guzum.tray");
-        };
-        break;
-
-    default:
+    if (controlPeer->mode() == ControlPeer::ModeClient) {
         return 0;
     }
 
+    TrayManager * tray = new TrayManager();
+
+    app.setQuitOnLastWindowClosed(false);
+
     /*
-    QSqlError se = Guzum::Db::init();
-    if (se.type() != QSqlError::NoError) {
-        qCritical() << "database connection error:" << se.databaseText() << "\n";
-        qCritical() << se.driverText();
-        exit(1);
-    }
+    new TrayMenuAdaptor(tray);
+    QDBusConnection connection = QDBusConnection::sessionBus();
+    connection.registerObject("/Tray", tray);
+    connection.registerService("com.regolit.guzum.tray");
     */
 
     return app.exec();    

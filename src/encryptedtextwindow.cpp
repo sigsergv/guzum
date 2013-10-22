@@ -8,7 +8,6 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtDebug>
-#include <QtDBus>
 
 #include "encryptedtextwindow.h"
 #include "settings.h"
