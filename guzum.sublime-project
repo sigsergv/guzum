@@ -1,0 +1,12 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"name": "guzum",
+			"file_exclude_patterns": ["guzum", "Makefile", ".hgignore", "*.sublime*", "*.o", "ui_*.h", "moc_*.cpp"],
+			"folder_exclude_patterns": ["src/debug", "src/release", "resources/icons"],
+			"path": "."
+		}
+	]
+}

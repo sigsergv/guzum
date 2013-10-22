@@ -6,24 +6,25 @@ Features
 * Do not ask stupid annoying questions about keys and confirmations.
 * Remember each window (by filename) position and size on the screen.
 
-Detailed description
-====================
+How does it work
+================
 
-Open file
----------
+On first launch without any arguments program places icon to the notification area and
+nothing else. If program is already started and icon is placed to the notification
+program does nothing.
 
-To open file just call ``guzum`` with that file path as an argument.
+When started with the argument ``--select-file`` program shows select file dialog
+to choose encrypted file to edit. For convenience there is a script named
+``guzum-select-file`` that executes command ``guzum --select-file``.
+
+When started with the path to encrypted file guzum opens editor for this file and also
+adds it to recently used files (for the notification area icon).
 
 Access recently opened files
 ----------------------------
 
-Guzum stores list of most recently used files, they could be easily reopened
-using notification area icon, to display that icon you should launch application
-with some command line option, like:
-
-    guzum --tray
-
-this will open application as a tray icon.
+Guzum stores list of most recently used files, they could be easily re-opened
+using notification area icon.
 
 Internal scenarious and requirements
 ====================================
@@ -41,4 +42,12 @@ Opening nonexisting encrypted file
 ----------------------------------
 
 * if user tries to open nonexisting gpg/asc file assume he wants to encrypt it using his own secret key
+
+IPC
+---
+
+Guzum uses UNIX-socket for interprocess communcations. When user calls guzum with the argument
+``--select-file`` or with the file path it tries to find running instance and pass these data 
+there. If there is no running instance (detected by UNIX-socket) it starts one and then performs
+the requested action (open file in the editor or open select file dialog).
 

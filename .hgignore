@@ -1,4 +1,5 @@
 syntax: glob
+guzum.sublime-workspace
 moc_*.cpp
 qrc_*.cpp
 *.a
