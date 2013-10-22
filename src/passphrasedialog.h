@@ -2,7 +2,7 @@
  * passphrasedialog.h
  *
  * Created on: Apr 25, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _PASSPHRASEDIALOG_H_

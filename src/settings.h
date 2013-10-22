@@ -2,7 +2,7 @@
  * settings.h
  *
  * Created on: Apr 19, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 #ifndef SETTINGS_H_
 #define SETTINGS_H_
@@ -11,9 +11,9 @@
 #include <QChar>
 #include <QList>
 
-struct QSettings;
-struct QWidget;
-struct QString;
+class QSettings;
+class QWidget;
+class QString;
 
 namespace Guzum
 {

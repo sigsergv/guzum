@@ -2,7 +2,7 @@
  * controlserver.cpp
  *
  * Created on: Oct 22, 2013
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #include <QtGui>
@@ -20,6 +20,8 @@ struct ControlPeer::Private
     ControlPeer::Error error;
     ControlPeer::Mode mode;
 };
+
+ControlPeer * ControlPeer::inst = 0;
 
 const char * ControlPeer::ACK = "ack";
 const char * ControlPeer::SHOW_DIALOG_METHOD = "show-dialog-bla-bla";
@@ -68,6 +70,15 @@ ControlPeer::ControlPeer(QObject * parent)
         p->error = NoError;
         p->mode = ModeClient;
     }
+}
+
+ControlPeer * ControlPeer::instance()
+{
+    if (inst == 0) {
+        inst = new ControlPeer();
+    }
+
+    return inst;
 }
 
 void ControlPeer::receiveConnection()

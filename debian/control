@@ -1,7 +1,7 @@
 Source: guzum
 Section: editors
 Priority: optional
-Maintainer: Sergei Stolyarov <sergei.stolyarov@regolit.com>
+Maintainer: Sergey Stolyarov <sergei.stolyarov@regolit.com>
 Build-Depends: debhelper (>= 7), libqt4-dev, libgpgme11-dev
 Standards-Version: 3.9.1
 Homepage: https://bitbucket.org/cancel/guzum

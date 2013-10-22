@@ -1,4 +1,4 @@
-DEFINES += GUZUM_VERSION="\\\"1.3\\\""
+DEFINES += GUZUM_VERSION="\\\"1.4\\\""
 DEFINES += _FILE_OFFSET_BITS="64"
 
 HEADERS += settings.h \
@@ -37,6 +37,11 @@ QT += network
 RESOURCES = ../resources/application.qrc
 TARGET = guzum
 DESTDIR = ../
+
+macx {
+    LIBS += -L/opt/local/lib
+    INCLUDEPATH += /opt/local/include
+}
 
 LIBS += -lgpgme
 

@@ -93,7 +93,7 @@
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Author: Sergei Stolyarov</string>
+      <string>Author: Sergey Stolyarov</string>
      </property>
     </widget>
    </item>

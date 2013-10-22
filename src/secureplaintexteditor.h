@@ -2,7 +2,7 @@
  * secureplaintexteditor.h
  *
  * Created on: Jun 09, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _SECUREPLAINTEXTEDITOR_H_
@@ -10,7 +10,7 @@
 
 #include <QPlainTextEdit>
 
-struct QMouseEvent;
+class QMouseEvent;
 
 class SecurePlainTextEditor : public QPlainTextEdit
 {

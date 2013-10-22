@@ -2,7 +2,7 @@
  * encryptedtextwindow.h
  *
  * Created on: Apr 19, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _ENCRYPTEDTEXTWINDOW_H_
@@ -10,8 +10,8 @@
 
 #include <QMainWindow>
 
-struct QString;
-struct QEvent;
+class QString;
+class QEvent;
 
 class EncryptedTextWindow : public QMainWindow
 {

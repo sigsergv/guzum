@@ -2,7 +2,7 @@
  * managehistorydialog.h
  *
  * Created on: May 03, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _MANAGEHISTORYDIALOG_H_

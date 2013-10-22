@@ -2,7 +2,7 @@
  * controlserver.h
  *
  * Created on: Oct 22, 2013
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _CONTROLPEER_H_
@@ -17,8 +17,8 @@ class ControlPeer : public QObject
 public:
     enum Error { NoError, FailedToStartServerError, NotInClientModeError, ReadFailedError };
     enum Mode { ModeUndefined, ModeClient, ModeServer };
+    static ControlPeer * instance();
 
-    ControlPeer(QObject * parent = 0);
     Error error();
     Mode mode();
 
@@ -35,6 +35,8 @@ protected slots:
     void receiveConnection();
 
 private:
+    ControlPeer(QObject * parent = 0);
+    static ControlPeer * inst;
     struct Private;
     Private * p;
 };

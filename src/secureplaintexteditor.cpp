@@ -2,7 +2,7 @@
  * secureplaintexteditor.cpp
  *
  * Created on: Jun 09, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #include <QtGui>

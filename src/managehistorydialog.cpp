@@ -2,7 +2,7 @@
  * managehistorydialog.cpp
  *
  * Created on: May 03, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #include <QtCore>

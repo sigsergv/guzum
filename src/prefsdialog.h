@@ -2,7 +2,7 @@
  * prefsdialog.h
  *
  * Created on: May 01, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _PREFSDIALOG_H_

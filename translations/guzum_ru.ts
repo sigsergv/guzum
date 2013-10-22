@@ -26,7 +26,7 @@
     </message>
     <message>
         <location filename="../src/aboutdialog.ui" line="96"/>
-        <source>Author: Sergei Stolyarov</source>
+        <source>Author: Sergey Stolyarov</source>
         <translation>Автор: Сергей Столяров</translation>
     </message>
     <message>

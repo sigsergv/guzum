@@ -2,7 +2,7 @@
  * gpgmewrapper.h
  *
  * Created on: Apr 20, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _GPGMEWRAPPER_H_
@@ -26,7 +26,7 @@ typedef enum {
 
 } GPGME_Wrapper_Errors;
 
-struct QWidget;
+class QWidget;
 
 class GPGME {
 public:

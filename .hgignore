@@ -9,3 +9,4 @@ src/ui_*.h
 Makefile
 
 ./guzum
+./guzum.app

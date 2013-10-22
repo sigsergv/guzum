@@ -2,7 +2,7 @@
  * gpgmewrapper.cpp
  *
  * Created on: Apr 20, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #include <QtDebug>

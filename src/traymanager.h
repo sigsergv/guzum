@@ -2,7 +2,7 @@
  * traymanager.h
  *
  * Created on: Apr 29, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #ifndef _TRAYMANAGER_H_
@@ -10,18 +10,20 @@
 
 #include <QObject>
 
-struct QAction;
+class QAction;
 
 class TrayManager : public QObject
 {
     Q_OBJECT
 public: 
-    TrayManager(QObject * parent = 0);
+    static TrayManager * instance();
     ~TrayManager();
+
+public slots:
+    void appendFile(const QString & filename, const QString & gnupgHome);
 
 protected slots:
     void quit();
-    void appendFile(const QString & filename, const QString & gnupgHome);
     void openFilename();
     void setPreferences();
     void showAboutDialog();
@@ -34,6 +36,8 @@ protected:
     void reloadFilenames();
 
 private:
+    static TrayManager * inst;
+    TrayManager(QObject * parent = 0);
     struct Private;
     Private * p;
 };

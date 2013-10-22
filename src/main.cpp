@@ -2,7 +2,7 @@
  * main.cpp
  *
  * Created on: Apr 19, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #define QT_USE_FAST_CONCATENATION
@@ -12,7 +12,6 @@
 #include <QtGui>
 #include <QtNetwork>
 #include <QtDebug>
-#include <QtDBus/QDBusConnection>
 
 #include "settings.h"
 #include "encryptedtextwindow.h"
@@ -56,7 +55,7 @@ int main(int argv, char *_args[])
         return 0;
     }
 
-    ControlPeer * controlPeer = new ControlPeer();
+    ControlPeer * controlPeer = ControlPeer::instance();
 
     switch (controlPeer->mode()) {
     case ControlPeer::ModeUndefined:
@@ -78,16 +77,10 @@ int main(int argv, char *_args[])
         return 0;
     }
 
-    TrayManager * tray = new TrayManager();
+    // initialize notification area icon
+    TrayManager::instance();
 
     app.setQuitOnLastWindowClosed(false);
-
-    /*
-    new TrayMenuAdaptor(tray);
-    QDBusConnection connection = QDBusConnection::sessionBus();
-    connection.registerObject("/Tray", tray);
-    connection.registerService("com.regolit.guzum.tray");
-    */
 
     return app.exec();    
 }

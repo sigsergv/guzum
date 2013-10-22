@@ -2,7 +2,7 @@
  * encryptedtextwindow.cpp
  *
  * Created on: Apr 19, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #include <QtCore>
@@ -12,6 +12,7 @@
 #include "encryptedtextwindow.h"
 #include "settings.h"
 #include "gpgmewrapper.h"
+#include "traymanager.h"
 #include "aboutdialog.h"
 #include "secureplaintexteditor.h"
 
@@ -209,15 +210,9 @@ bool EncryptedTextWindow::show()
         QString contents = QString::fromUtf8(decrypted.constData());
         p->editor->setPlainText(contents);
         QMainWindow::show();
-        // push filename to dbus service
-        GPGME * gpg = GPGME::instance();
-        QDBusConnection bus = QDBusConnection::sessionBus();
-        QDBusInterface interface("com.regolit.guzum.tray", "/Tray", "com.regolit.guzum.tray", bus);
-        if (interface.isValid()) {
-            QDBusReply<bool> dbusReply = interface.call("appendFile", p->filename, gpg->gpgHomeDir());
-        } else {
-            qDebug() << "Cannot send filename to DBus service";
-        }
+
+        TrayManager * tm = TrayManager::instance();
+        tm->appendFile(p->filename, gpg->gpgHomeDir());
         return true;
     }
 }

@@ -2,7 +2,7 @@
  * traymanager.cpp
  *
  * Created on: Apr 29, 2012
- * Author: Sergei Stolyarov
+ * Author: Sergey Stolyarov
  */
 
 #include <QtDebug>
@@ -25,6 +25,8 @@ struct TrayManager::Private {
     QList< QStringsHash > trayFilenames;
     QList<QAction*> trayFilenamesActions;
 };
+
+TrayManager * TrayManager::inst = 0;
 
 TrayManager::TrayManager(QObject * parent)
     : QObject(parent)
@@ -68,6 +70,15 @@ TrayManager::TrayManager(QObject * parent)
 
     reloadFilenames();
     rebuildFilenamesMenu();
+}
+
+TrayManager * TrayManager::instance()
+{
+    if (inst == 0) {
+        inst = new TrayManager();
+    }
+
+    return inst;
 }
 
 TrayManager::~TrayManager()
