@@ -1,2 +1,3 @@
 qmake CONFIG+=debug
 qmake -spec macx-g++
+
