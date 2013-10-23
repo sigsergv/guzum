@@ -21,29 +21,18 @@ SecurePlainTextEditor::~SecurePlainTextEditor()
 
 }
 
-void SecurePlainTextEditor::mouseReleaseEvent(QMouseEvent * e)
+void SecurePlainTextEditor::mouseReleaseEvent(QMouseEvent *)
 {
     // method is required to disable text copying to X mouse selection
 }
 
-void SecurePlainTextEditor::mouseDoubleClickEvent(QMouseEvent * e)
+void SecurePlainTextEditor::mouseDoubleClickEvent(QMouseEvent *)
 {
     // select word
     QString text = this->toPlainText();
-    int textLength = text.length();
     QTextCursor cursor = textCursor();
 
     int pos = cursor.position();
-
-    /*
-    int end = pos;
-    while (end < textLength) {
-        end++;
-        if (text[end].isSpace()) {
-            break;
-        }
-    }
-    */
 
     int start = pos;
     while (start > 0) {
