@@ -98,7 +98,6 @@ void TrayManager::quit()
 
 void TrayManager::appendFile(const QString & filename, const QString & gnupgHome)
 {
-    qDebug() << "Append file" << filename << "to the list";
     // first try to find filename in the list and pop it to the top if there is one
     int len = p->trayFilenames.size();
     int ind = -1;
@@ -120,7 +119,6 @@ void TrayManager::appendFile(const QString & filename, const QString & gnupgHome
         // delete the last
         p->trayFilenames.removeAt(p->trayFilenames.size() - 1);
     }
-    qDebug() << item;
     dumpFilenames();
     rebuildFilenamesMenu();
 }
@@ -133,14 +131,9 @@ void TrayManager::openFilename()
 
     QString filename = item["filename"].toString();
     QString gnupgHome = item["gnupghome"].toString();
-    qDebug() << "filename: " << filename << "home" << gnupgHome;
 
-    // execute the same application but pass filename as the argument
-    QString app = QCoreApplication::applicationFilePath();
-    QStringList args;
-    args << filename;
-     
-    QProcess::startDetached(app, args);
+    ControlPeer * peer = ControlPeer::instance();
+    peer->editFile(filename);
 }
 
 void TrayManager::selectFilename()
@@ -244,7 +237,6 @@ void TrayManager::rebuildFilenamesMenu()
 
     Q_FOREACH (const QStringsHash item, p->trayFilenames) {
         action = new QAction(item["filename"].toString(), this);
-        //action->setToolTip("asd");
         action->setData(item);
         connect(action, SIGNAL(triggered()),
                 this, SLOT(openFilename()));
