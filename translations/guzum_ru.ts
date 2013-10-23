@@ -98,7 +98,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../src/encryptedtextwindow.cpp" line="172"/>
-        <location filename="../src/encryptedtextwindow.cpp" line="270"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="264"/>
         <source>GPG_ERR_INV_VALUE</source>
         <translation>GPG_ERR_INV_VALUE</translation>
     </message>
@@ -128,68 +128,68 @@ p, li { white-space: pre-wrap; }
         <translation>Не удалось расшифровать</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="246"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="240"/>
         <source>Data too large to encrypt.</source>
         <translation>Слишком много данных для зашифровки.</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="250"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="244"/>
         <source>Cannot find public key to encrypt data.</source>
         <translation>Не удалось найти публичный шрифт для зашифровки данных.</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="254"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="248"/>
         <source>Cannot open target file.</source>
         <translation>Не удалось открыть нужный файл.</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="258"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="252"/>
         <source>Cannot backup encrypted file, it&apos;s too large.</source>
         <translation>Не удалось сделать резервную копию файла: он слишком большой.</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="262"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="256"/>
         <source>More than one key found for key ID “%1”</source>
         <translation>Для ID ключа «%1» нашлось больше одного ключа</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="266"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="260"/>
         <source>Unusable public key (maybe expired or revoked)</source>
         <translation>Публичный ключ нельзя использовать (он либо устарел, либо отозван)</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="274"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="268"/>
         <source>Unknown error: %1</source>
         <translation>Неизвестная ошибка: %1</translation>
     </message>
     <message>
-        <location filename="../src/encryptedtextwindow.cpp" line="277"/>
+        <location filename="../src/encryptedtextwindow.cpp" line="271"/>
         <source>Encryption failed</source>
         <translation>Не удалось зашифровать</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="31"/>
-        <location filename="../src/main.cpp" line="41"/>
+        <location filename="../src/controlpeer.cpp" line="207"/>
+        <location filename="../src/controlpeer.cpp" line="217"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="32"/>
+        <location filename="../src/controlpeer.cpp" line="208"/>
         <source>File `%1&apos; not found</source>
         <translation>File «%1» не найден</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="42"/>
+        <location filename="../src/controlpeer.cpp" line="218"/>
         <source>Cannot initialize GPG backend</source>
         <translation>Не удалось инициализировать GPG</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="102"/>
+        <location filename="../src/controlpeer.cpp" line="180"/>
         <source>Select file encrypted by Gnupg</source>
         <translation>Выберите файл, зашифрованный Gnupg</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="104"/>
+        <location filename="../src/controlpeer.cpp" line="182"/>
         <source>Encrypted files (*.gpg, *.asc) (*.gpg *.asc);;All files (*.*)</source>
         <translation>Шифрованные файлы (*.gpg, *.asc) (*.gpg *.asc);;All files (*.*)</translation>
     </message>
@@ -214,7 +214,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../src/managehistorydialog.ui" line="81"/>
         <source>Delete selected</source>
-        <translation>Удалить выбранно</translation>
+        <translation>Удалить выбранное</translation>
     </message>
 </context>
 <context>
@@ -261,22 +261,27 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>TrayManager</name>
     <message>
-        <location filename="../src/traymanager.cpp" line="37"/>
+        <location filename="../src/traymanager.cpp" line="40"/>
         <source>&amp;Manage history</source>
         <translation>Править список файлов</translation>
     </message>
     <message>
-        <location filename="../src/traymanager.cpp" line="38"/>
+        <location filename="../src/traymanager.cpp" line="41"/>
+        <source>&amp;Open file…</source>
+        <translation>&amp;Открыть файл…</translation>
+    </message>
+    <message>
+        <location filename="../src/traymanager.cpp" line="42"/>
         <source>&amp;Preferences…</source>
         <translation>&amp;Настройки…</translation>
     </message>
     <message>
-        <location filename="../src/traymanager.cpp" line="39"/>
+        <location filename="../src/traymanager.cpp" line="43"/>
         <source>&amp;About Guzum</source>
         <translation>&amp;О программе</translation>
     </message>
     <message>
-        <location filename="../src/traymanager.cpp" line="40"/>
+        <location filename="../src/traymanager.cpp" line="44"/>
         <source>&amp;Quit Guzum</source>
         <translation>В&amp;ыход</translation>
     </message>
