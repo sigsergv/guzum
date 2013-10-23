@@ -44,7 +44,8 @@ GPGME::~GPGME()
     delete p;
 }
 
-GPGME * GPGME::inst = 0;
+// contains instances of GPGME for each GNUPGHOME value
+static QMap<QString, GPGME*> instancesStore;
 
 // passphrase callback
 gpgme_error_t passphraseCallback(void * hook, const char * uid_hint, 
@@ -68,8 +69,12 @@ gpgme_error_t passphraseCallback(void * hook, const char * uid_hint,
     return GPG_ERR_NO_ERROR;
 }
 
-GPGME_Error GPGME::init()
+GPGME_Error GPGME::init(const QString & gpgHomeDir)
 {
+    if (instancesStore.contains(gpgHomeDir)) {
+        return GPG_ERR_NO_ERROR;
+    }
+
     setlocale(LC_ALL, "");
     gpgme_check_version(NULL);
     gpgme_set_locale(NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
@@ -107,26 +112,35 @@ GPGME_Error GPGME::init()
     }
 
     // we don't need to set gnupg home dir explicitly
-    QString gpgHomeDir = QString::fromAscii(getenv("GNUPGHOME"));
+    QString gnupgHome;
     if (gpgHomeDir.isEmpty()) {
-        // use default path: "~/.gnupg"
-        QDir gh = QDir::home();
-        gh.cd(".gnupg");
-        gpgHomeDir = gh.canonicalPath();
+        // i.e. use default gnupg directory or one from environment
+        QString gnupgHomeEnv = QString::fromAscii(qgetenv("GNUPGHOME"));
+        if (!gnupgHomeEnv.isEmpty()) {
+            gnupgHome = gnupgHomeEnv;
+        } else {
+            // use default path: "~/.gnupg"
+            QDir gh = QDir::home();
+            gh.cd(".gnupg");
+            gnupgHome = gh.canonicalPath();
+        }
+    } else {
+        QDir gh(gpgHomeDir);
+        gnupgHome = gh.canonicalPath();
     }
-    qDebug() << "GNUPGHOME" << gpgHomeDir;
-
+    qDebug() << "GNUPGHOME" << gnupgHome;
+    
     err = gpgme_ctx_set_engine_info(context, GPGME_PROTOCOL_OpenPGP, 
             engineInfo->file_name,
-            //engineInfo->home_dir
-            gpgHomeDir.toAscii().data()
+            gnupgHome.toAscii().data()
             );
     if (err != GPG_ERR_NO_ERROR) {
         return err;
     }
 
-    inst = new GPGME(context, gpgHomeDir);
-    qDebug() << "gpgme initalized";
+    GPGME * inst = new GPGME(context, gnupgHome);
+    instancesStore[gpgHomeDir] = inst;
+    qDebug() << "gpgme initalized for the directory " << gnupgHome << "[store key: " << gpgHomeDir << "]";
 
     return GPG_ERR_NO_ERROR;
 }
@@ -325,8 +339,12 @@ QString GPGME::gpgHomeDir()
     return p->gpgHomeDir;   
 }
 
-GPGME * GPGME::instance()
+GPGME * GPGME::instance(const QString & gpgHomeDir)
 {
-    return inst;
+    if (instancesStore.contains(gpgHomeDir)) {
+        return instancesStore[gpgHomeDir];
+    }
+
+    return 0;
 }
 

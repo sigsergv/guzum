@@ -133,7 +133,7 @@ void TrayManager::openFilename()
     QString gnupgHome = item["gnupghome"].toString();
 
     ControlPeer * peer = ControlPeer::instance();
-    peer->editFile(filename);
+    peer->editFile(filename, gnupgHome);
 }
 
 void TrayManager::selectFilename()

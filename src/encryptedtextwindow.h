@@ -17,7 +17,7 @@ class EncryptedTextWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    EncryptedTextWindow(const QString & filename, QWidget * parent = 0);
+    EncryptedTextWindow(const QString & filename, const QString & gnupgHome, QWidget * parent = 0);
     ~EncryptedTextWindow();
 
 private:

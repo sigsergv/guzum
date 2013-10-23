@@ -26,6 +26,7 @@ ControlPeer * ControlPeer::inst = 0;
 const char * ControlPeer::ACK = "ack";
 const char * ControlPeer::SHOW_DIALOG_METHOD = "show-dialog-bla-bla";
 const char * ControlPeer::OPEN_FILE_METHOD = "open-editor-bla-bla";
+const char * ControlPeer::IS_ALIVE_METHOD = "is-alive";
 
 ControlPeer::ControlPeer(QObject * parent)
     : QObject(parent)
@@ -116,11 +117,26 @@ void ControlPeer::receiveConnection()
     socket->waitForBytesWritten(1000);
     delete socket;
 
-    if (message == SHOW_DIALOG_METHOD) {
+    // split message into the tokens, the format is the following:
+    // <method_name>\n<arg0>\n<arg1> etc
+    QStringList tokens = message.split("\n");
+    QString methodName = tokens[0];
+
+    if (methodName == SHOW_DIALOG_METHOD) {
         showFileSelectorDialog();
-    } else if (message.startsWith(OPEN_FILE_METHOD)) {
+    } else if (methodName == OPEN_FILE_METHOD) {
+        if (tokens.size() == 2) {
+            // just open file using default gnupg home
+            QString filename = tokens[1];
+            editFile(filename);
+        } else if (tokens.size() == 3) {
+            // use file and custom gnupg home
+            QString filename = tokens[1];
+            QString gnupgHome = tokens[2];
+            editFile(filename, gnupgHome);
+        }
+        
         QString filename = message.mid(qstrlen(OPEN_FILE_METHOD)+1);
-        editFile(filename);
     }
 }
 
@@ -196,6 +212,38 @@ void ControlPeer::showFileSelectorDialog()
     }
 }
 
+void ControlPeer::editFile(const QString & fn, const QString & gnupgHome)
+{
+    QString filename(fn);
+
+    if (mode() == ModeServer) {
+        EncryptedTextWindow * textWindow;
+        QFileInfo fi(filename);
+        if (!fi.exists()) {
+            QMessageBox::critical(0, EncryptedTextWindow::tr("Error"), 
+                    EncryptedTextWindow::tr("File `%1' not found").arg(filename));
+            return;
+        }
+        // init gpgme
+        GPGME_Error err = GPGME::init(gnupgHome);
+        if (err != GPG_ERR_NO_ERROR) {
+            QMessageBox::critical(0, EncryptedTextWindow::tr("Error"),
+                    EncryptedTextWindow::tr("Cannot initialize GPG backend"));
+            return;
+        }
+
+        filename = fi.canonicalFilePath();
+        textWindow = new EncryptedTextWindow(filename, gnupgHome);
+
+        QApplication::setActiveWindow(textWindow);
+        if (!textWindow->show()) {
+            return;
+        }
+    } else if (mode() == ModeClient) {
+        sendRawMessage(QString("%1\n%2\n%3").arg(OPEN_FILE_METHOD).arg(filename).arg(gnupgHome), 1000);
+    }
+}
+
 void ControlPeer::editFile(const QString & fn)
 {
     QString filename(fn);
@@ -208,22 +256,23 @@ void ControlPeer::editFile(const QString & fn)
                     EncryptedTextWindow::tr("File `%1' not found").arg(filename));
             return;
         }
-        filename = fi.canonicalFilePath();
-        textWindow = new EncryptedTextWindow(filename);
-
-        // init gpgme
-        GPGME_Error err = GPGME::init();
+        // init gpgme if required
+        GPGME_Error err = GPGME::init(QString());
         if (err != GPG_ERR_NO_ERROR) {
             QMessageBox::critical(0, EncryptedTextWindow::tr("Error"),
                     EncryptedTextWindow::tr("Cannot initialize GPG backend"));
             return;
         }
+
+        filename = fi.canonicalFilePath();
+        textWindow = new EncryptedTextWindow(filename, QString());
+
         QApplication::setActiveWindow(textWindow);
         if (!textWindow->show()) {
             return;
         }
     } else if (mode() == ModeClient) {
-        sendRawMessage(QString("%1:%2").arg(OPEN_FILE_METHOD).arg(filename), 1000);
+        sendRawMessage(QString("%1\n%2").arg(OPEN_FILE_METHOD).arg(filename), 1000);
     }
 }
 

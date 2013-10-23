@@ -24,11 +24,12 @@ enum Mode {ModeNone, ModeEditFile, ModeTrayService} ;
 
 void help(QString program)
 {
-    std::cout << "Usage:\n    " << program.toStdString() << " [args] [FILENAME]\n";
+    std::cout << "Usage:\n    " << program.toStdString() << " [args] [FILENAME] [GNUPGHOME]\n";
     std::cout << "Arguments:\n";
     std::cout << "    --help, -h        show this help\n";
     std::cout << "    --select-file     show file selection dialog\n";
     std::cout << "    [FILENAME]        open this encrypted file in the editor\n";
+    std::cout << "    [GNUPGHOME]       optional GNUPGHOME directory\n";
     std::cout << std::endl;
 }
 
@@ -48,7 +49,7 @@ int main(int argv, char *_args[])
     // --tray : start as tray icon (prevent multiple instances)
     // filepath : open file in the editor
     QStringList args = QCoreApplication::arguments();
-    Guzum::Config::initSettings("guzum.ini");
+    Guzum::Config::initSettings();
 
     if (args.contains("-h") || args.contains("--help")) {
         help(args[0]);
@@ -57,6 +58,11 @@ int main(int argv, char *_args[])
 
     ControlPeer * controlPeer = ControlPeer::instance();
 
+    if (controlPeer->mode() == ControlPeer::ModeServer) {
+        // initialize notification area icon
+        TrayManager::instance();
+    }
+    
     switch (controlPeer->mode()) {
     case ControlPeer::ModeUndefined:
         qWarning("Cannot initialize peer, terminating");
@@ -69,6 +75,8 @@ int main(int argv, char *_args[])
             controlPeer->showFileSelectorDialog();
         } else if (args.length() == 2) {
             controlPeer->editFile(args[1]);
+        } else if (args.length() == 3) {
+            controlPeer->editFile(args[1], args[2]);
         }
         break;
     }
@@ -77,8 +85,6 @@ int main(int argv, char *_args[])
         return 0;
     }
 
-    // initialize notification area icon
-    TrayManager::instance();
 
     app.setQuitOnLastWindowClosed(false);
 

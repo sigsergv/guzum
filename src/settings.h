@@ -19,7 +19,7 @@ namespace Guzum
 {
 namespace Config
 {
-    void initSettings(const QString & file);
+    void initSettings();
     QSettings * settings();
     QString version();
     QString uiLang();

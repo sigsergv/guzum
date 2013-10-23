@@ -30,8 +30,8 @@ class QWidget;
 
 class GPGME {
 public:
-    static GPGME * instance();
-    static GPGME_Error init();
+    static GPGME * instance(const QString & gpgHomeDir);
+    static GPGME_Error init(const QString & gpgHomeDir);
     GPGME_Error error();
 
     QByteArray decryptFile(const QString & filename, QString & keyId, QWidget * parent = 0);

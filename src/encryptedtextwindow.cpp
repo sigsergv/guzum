@@ -28,17 +28,19 @@ struct EncryptedTextWindow::Private
     QLabel * timerLabel;
     QTimer * autoCloseTimer;
     unsigned int autoCloseCounter;
+    QString gnupgHome;
 };
 
 static const QString RND_CHARACTERS_SET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 static unsigned int AUTO_CLOSE_TIMEOUT = 600; // in seconds
 
-EncryptedTextWindow::EncryptedTextWindow(const QString & filename, QWidget * parent)
+EncryptedTextWindow::EncryptedTextWindow(const QString & filename, const QString & gnupgHome, QWidget * parent)
     : QMainWindow(parent)
 {
     p = new Private;
     QFileInfo fi(filename);
     p->filename = fi.canonicalFilePath();
+    p->gnupgHome = gnupgHome;
 
     p->autoCloseTimer = new QTimer(this);
     p->autoCloseTimer->setInterval(1000);
@@ -159,9 +161,8 @@ void EncryptedTextWindow::close()
 
 bool EncryptedTextWindow::show()
 {
-
     // now try to decrypt and load data from the file
-    GPGME * gpg = GPGME::instance();
+    GPGME * gpg = GPGME::instance(p->gnupgHome);
     QByteArray decrypted = gpg->decryptFile(p->filename, p->gpgUid, this);
     if (gpg->error() != GPG_ERR_NO_ERROR) {
         // failed to decrypt file
@@ -230,7 +231,7 @@ void EncryptedTextWindow::saveFile()
     if (p->gpgUid.isEmpty()) {
         return;
     }
-    GPGME * gpg = GPGME::instance();
+    GPGME * gpg = GPGME::instance(p->gnupgHome);
     QByteArray data = p->editor->toPlainText().toUtf8();
     gpg->encryptBytesToFile(data, p->filename, p->gpgUid);
     if (gpg->error() != GPG_ERR_NO_ERROR) {

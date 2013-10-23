@@ -24,9 +24,11 @@ public:
 
     void showFileSelectorDialog();
     void editFile(const QString & filename);
+    void editFile(const QString & filename, const QString & gnupgHome);
 
 protected:
     static const char * ACK;
+    static const char * IS_ALIVE_METHOD;
     static const char * SHOW_DIALOG_METHOD;
     static const char * OPEN_FILE_METHOD;
     QString sendRawMessage(const QString & msg, int timeout);

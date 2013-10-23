@@ -18,7 +18,7 @@ namespace Guzum
 namespace Config
 {
     // explicitly initialize settings
-    void initSettings(const QString & file)
+    void initSettings()
     {
         // init settings on first call
         QCoreApplication::setApplicationName("Guzum");
@@ -26,7 +26,7 @@ namespace Config
         QCoreApplication::setOrganizationName("regolit.com");
         QCoreApplication::setOrganizationDomain("guzum.regolit.com");
 
-        ::_settings = new QSettings(profilePath()+"/" + file, QSettings::IniFormat);
+        ::_settings = new QSettings(profilePath() + "/guzum.ini", QSettings::IniFormat);
     }
 
     QSettings * settings()
@@ -54,7 +54,7 @@ namespace Config
         
         // find directory with translations
         if (::uiLangsPath.isEmpty()) {
-#ifdef Q_OS_UNIX
+#ifdef Q_OS_LINUX
             // check standard dirs
             QStringList checkPaths;
             checkPaths << "/usr/share/guzum/translations/";
