@@ -184,6 +184,7 @@ void ControlPeer::showFileSelectorDialog()
         if (editFilename.isEmpty()) {
             return;
         }
+        editFile(editFilename);
         // remember last used directory
         QFileInfo fi(editFilename);
         settings->beginGroup("EditFileSelector");

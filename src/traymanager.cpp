@@ -12,6 +12,7 @@
 #include "prefsdialog.h"
 #include "managehistorydialog.h"
 #include "aboutdialog.h"
+#include "controlpeer.h"
 #include "settings.h"
 
 #define TRAY_FILENAMES_LIST_SIZE_LIMIT 10
@@ -37,6 +38,7 @@ TrayManager::TrayManager(QObject * parent)
 
     // create actions
     QAction * manageHistoryAction = new QAction(tr("&Manage history"), this);
+    QAction * selectFileDialogAction = new QAction(tr("&Open file…"), this);
     QAction * prefsAction = new QAction(tr("&Preferences…"), this);
     QAction * aboutAction = new QAction(tr("&About Guzum"), this);
     QAction * quitAction = new QAction(tr("&Quit Guzum"), this);
@@ -45,6 +47,7 @@ TrayManager::TrayManager(QObject * parent)
     p->filenamesSeparatorAction = p->trayMenu->addSeparator();
     p->trayMenu->addAction(manageHistoryAction);
     p->trayMenu->addSeparator();
+    p->trayMenu->addAction(selectFileDialogAction);
     p->trayMenu->addAction(prefsAction);
     p->trayMenu->addAction(aboutAction);
     p->trayMenu->addAction(quitAction);
@@ -58,6 +61,8 @@ TrayManager::TrayManager(QObject * parent)
             this, SLOT(showAboutDialog()));
     connect(quitAction, SIGNAL(triggered()),
             this, SLOT(quit()));
+    connect(selectFileDialogAction, SIGNAL(triggered()),
+            this, SLOT(selectFilename()));
     
     // for future use
     //connect(p->trayMenu, SIGNAL(hovered(QAction*)),
@@ -136,6 +141,12 @@ void TrayManager::openFilename()
     args << filename;
      
     QProcess::startDetached(app, args);
+}
+
+void TrayManager::selectFilename()
+{
+    ControlPeer * peer = ControlPeer::instance();
+    peer->showFileSelectorDialog();
 }
 
 void TrayManager::setPreferences()

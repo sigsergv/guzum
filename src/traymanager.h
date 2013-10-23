@@ -25,6 +25,7 @@ public slots:
 protected slots:
     void quit();
     void openFilename();
+    void selectFilename();
     void setPreferences();
     void showAboutDialog();
     void manageHistory();
