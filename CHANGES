@@ -4,6 +4,7 @@
 * fixing startup behaviour
 * new command line arguments
 * new IPC (no more dbus)
+* fixed custom keyrings support
 * mac os x support
 
 1.3
