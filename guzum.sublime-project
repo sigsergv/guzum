@@ -2,11 +2,29 @@
 	"folders":
 	[
 		{
+			"file_exclude_patterns":
+			[
+				"guzum",
+				"Makefile",
+				".hgignore",
+				"*.sublime*",
+				"*.o",
+				"ui_*.h",
+				"moc_*.cpp"
+			],
+			"folder_exclude_patterns":
+			[
+				"src/debug",
+				"src/release",
+				"resources/icons"
+			],
 			"follow_symlinks": true,
 			"name": "guzum",
-			"file_exclude_patterns": ["guzum", "Makefile", ".hgignore", "*.sublime*", "*.o", "ui_*.h", "moc_*.cpp"],
-			"folder_exclude_patterns": ["src/debug", "src/release", "resources/icons"],
-			"path": "."
+			"path": "/Users/sigsergv/projects/guzum"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/Developer/Applications/Qt/Designer.app"
 		}
 	]
 }
