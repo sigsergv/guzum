@@ -125,8 +125,17 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, const QString
     // try to restore window settings
     settings->beginGroup("Windows");
     QString key;
+    QByteArray bv;
+
     key = QString("%1-geometry").arg(p->filenameHash);
-    restoreGeometry(settings->value(key).toByteArray());
+    bv = settings->value(key).toByteArray();
+    if (!bv.isEmpty()) {
+        restoreGeometry(bv);
+    } else {
+        // set default width and height
+        resize(600, 400);
+    }
+
     key = QString("%1-state").arg(p->filenameHash);
     restoreState(settings->value(key).toByteArray());
     key = QString("%1-font").arg(p->filenameHash);
@@ -140,6 +149,11 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, const QString
         settings->endGroup();
         if (value.canConvert<QFont>()) {
             p->editor->setFont(value.value<QFont>());
+        } else {
+            // use "fallback" monospace font
+            QFont font("Monospace");
+            font.setStyleHint(QFont::TypeWriter);
+            p->editor->setFont(font);
         }
     }
 
