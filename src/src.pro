@@ -39,8 +39,8 @@ TARGET = guzum
 DESTDIR = ../
 
 macx {
-    LIBS += -L/opt/local/lib
-    INCLUDEPATH += /opt/local/include
+    LIBS += -L/usr/local/lib
+    INCLUDEPATH += /usr/local/include
 }
 
 LIBS += -lgpgme

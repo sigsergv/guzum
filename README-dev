@@ -1,3 +1,9 @@
 qmake CONFIG+=debug
+
+MacOS
+=====
+
+You need brew installed and gpgme from brew.
+
 qmake -spec macx-g++
 
