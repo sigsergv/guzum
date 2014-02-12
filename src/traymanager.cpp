@@ -6,7 +6,7 @@
  */
 
 #include <QtDebug>
-#include <QtGui>
+#include <QtWidgets>
 
 #include "traymanager.h"
 #include "prefsdialog.h"

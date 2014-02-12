@@ -6,8 +6,9 @@
  */
 
 #include <QtCore>
-#include <QtGui>
+#include <QtWidgets>
 #include <QtDebug>
+#include <QLabel>
 
 #include "encryptedtextwindow.h"
 #include "settings.h"

@@ -5,7 +5,7 @@
  * Author: Sergey Stolyarov
  */
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QtNetwork>
 #include <QtDebug>
 

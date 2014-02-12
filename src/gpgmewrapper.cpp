@@ -64,7 +64,7 @@ gpgme_error_t passphraseCallback(void * hook, const char * uid_hint,
     }
 
     QString pass = passDlg.passphrase() + "\n";
-    QByteArray passBytes = pass.toAscii();
+    QByteArray passBytes = pass.toLatin1();
     write(fd, passBytes.constData(), passBytes.size());
     return GPG_ERR_NO_ERROR;
 }
@@ -115,7 +115,7 @@ GPGME_Error GPGME::init(const QString & gpgHomeDir)
     QString gnupgHome;
     if (gpgHomeDir.isEmpty()) {
         // i.e. use default gnupg directory or one from environment
-        QString gnupgHomeEnv = QString::fromAscii(qgetenv("GNUPGHOME"));
+        QString gnupgHomeEnv = QString::fromLatin1(qgetenv("GNUPGHOME"));
         if (!gnupgHomeEnv.isEmpty()) {
             gnupgHome = gnupgHomeEnv;
         } else {
@@ -132,7 +132,7 @@ GPGME_Error GPGME::init(const QString & gpgHomeDir)
     
     err = gpgme_ctx_set_engine_info(context, GPGME_PROTOCOL_OpenPGP, 
             engineInfo->file_name,
-            gnupgHome.toAscii().data()
+            gnupgHome.toLatin1().data()
             );
     if (err != GPG_ERR_NO_ERROR) {
         return err;
@@ -253,7 +253,7 @@ void GPGME::encryptBytesToFile(const QByteArray & data, const QString & filename
     }
 
     // list all available keys and find the appropriate
-    err = gpgme_op_keylist_start(p->context, keyId.toAscii().data(), 0);
+    err = gpgme_op_keylist_start(p->context, keyId.toLatin1().data(), 0);
     gpgme_key_t key = 0;
     gpgme_key_t loop_key = 0;
     int foundCount = 0;

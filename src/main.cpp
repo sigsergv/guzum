@@ -12,6 +12,7 @@
 #include <QtGui>
 #include <QtNetwork>
 #include <QtDebug>
+#include <QApplication>
 
 #include "settings.h"
 #include "encryptedtextwindow.h"
@@ -35,8 +36,6 @@ void help(QString program)
 
 int main(int argv, char *_args[])
 {
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QApplication app(argv, _args);
 
     // load localization
