@@ -8,6 +8,8 @@
 #include <QtWidgets>
 #include <QtNetwork>
 #include <QtDebug>
+#include <QTest>
+#include <QEventLoop>
 
 #include "controlpeer.h"
 #include "encryptedtextwindow.h"
@@ -193,13 +195,23 @@ void ControlPeer::showFileSelectorDialog()
         if (initDir.isEmpty()) {
             initDir = QDir::homePath();
         }
-        editFilename = QFileDialog::getOpenFileName(0, EncryptedTextWindow::tr("Select file encrypted by Gnupg"), 
-            initDir,
-            EncryptedTextWindow::tr("Encrypted files (*.gpg, *.asc) (*.gpg *.asc);;All files (*.*)"), 
-            0, 0);
+        QPointer<QFileDialog> fileDialog = new QFileDialog(0, EncryptedTextWindow::tr("Select file encrypted by Gnupg"),
+            initDir, EncryptedTextWindow::tr("Encrypted files (*.gpg, *.asc) (*.gpg *.asc);;All files (*.*)"));
+
+        if (fileDialog->exec()) {
+            QStringList files = fileDialog->selectedFiles();
+            editFilename = files[0];
+        }
+
         if (editFilename.isEmpty()) {
             return;
         }
+
+#ifdef Q_OS_MAC
+        // special workaround for MacOSX
+        // to let system hide dialog
+        QTest::qWait(500);
+#endif
         editFile(editFilename);
         // remember last used directory
         QFileInfo fi(editFilename);

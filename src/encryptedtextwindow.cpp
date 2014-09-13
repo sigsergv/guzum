@@ -205,7 +205,8 @@ bool EncryptedTextWindow::show()
 
         case GPG_ERR_BAD_PASSPHRASE:
             qDebug() << "GPG_ERR_BAD_PASSPHRASE";
-            errorMessage = tr("Incorrect passphrase.");
+            // not passphrase, most probably user closed password dialog or attempts limit is reached
+            // errorMessage = tr("Incorrect passphrase.");
             break;
 
         case GPG_ERR_CANCELED:

@@ -13,7 +13,8 @@
 				"*.sublime*",
 				"*.o",
 				"ui_*.h",
-				"moc_*.cpp"
+				"moc_*.cpp",
+				"qrc_*.cpp"
 			],
 			"folder_exclude_patterns":
 			[

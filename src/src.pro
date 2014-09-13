@@ -32,7 +32,7 @@ FORMS += passphrasedialog.ui \
 CODECFORTR = UTF-8
 TRANSLATIONS = ../translations/guzum_ru.ts
 
-QT += widgets network
+QT += widgets network testlib
 
 RESOURCES = ../resources/application.qrc
 TARGET = guzum
