@@ -2,8 +2,11 @@
 	"folders":
 	[
 		{
+			"path": ".",
 			"file_exclude_patterns":
 			[
+				".DS_Store",
+				".qmake.stash",
 				"guzum",
 				"Makefile",
 				".hgignore",
@@ -14,17 +17,14 @@
 			],
 			"folder_exclude_patterns":
 			[
+				"guzum.app",
+				"guzum.xcodeproj",
 				"src/debug",
 				"src/release",
 				"resources/icons"
 			],
 			"follow_symlinks": true,
-			"name": "guzum",
-			"path": "/Users/sigsergv/projects/guzum"
-		},
-		{
-			"follow_symlinks": true,
-			"path": "/Developer/Applications/Qt/Designer.app"
+			"name": "guzum"
 		}
 	]
 }

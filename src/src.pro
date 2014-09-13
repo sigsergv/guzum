@@ -41,6 +41,13 @@ DESTDIR = ../
 macx {
     LIBS += -L/usr/local/lib
     INCLUDEPATH += /usr/local/include
+    ICON = ../resources/icons/guzum.icns
+
+    QMAKE_INFO_PLIST = ../resources/Info.plist
+    mactrans.target = mactrans
+    mactrans.commands = lrelease src.pro && cp ../translations/*.qm ../guzum.app/Contents/Resources
+    QMAKE_EXTRA_TARGETS += mactrans
+    PRE_TARGETDEPS += mactrans
 }
 
 LIBS += -lgpgme

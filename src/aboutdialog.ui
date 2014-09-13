@@ -65,6 +65,40 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="qtVersionLabel">
+         <property name="text">
+          <string>QT VERSION COMPILED</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="qtCompiledVersionLabel">
+         <property name="text">
+          <string>QT VERSION RUNTIME</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </item>
    <item>

@@ -11,3 +11,7 @@ Makefile
 
 ./guzum
 ./guzum.app
+./scripts/guzum.icns
+./scripts/guzum.iconset
+./guzum.dmg
+./.qmake.stash
