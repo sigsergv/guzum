@@ -1,12 +1,11 @@
 Source: guzum
 Section: editors
 Priority: optional
-Maintainer: Sergey Stolyarov <sergei.stolyarov@regolit.com>
+Maintainer: Sergey Stolyarov <sergei@regolit.com>
 Build-Depends: debhelper (>= 7), libqt4-dev, libgpgme11-dev
 Standards-Version: 3.9.1
-Homepage: https://bitbucket.org/cancel/guzum
-Vcs-Hg: https://bitbucket.org/cancel/guzum
-Vcs-Browser: https://bitbucket.org/cancel/guzum/src
+Homepage: https://github.com/sigsergv/guzum
+Vcs-Browser: https://github.com/sigsergv/guzum
 
 Package: guzum
 Architecture: any

@@ -8,9 +8,9 @@ src/ui_*.h
 Makefile
 .DS_Store
 
-./guzum
-./guzum.app
-./scripts/guzum.icns
-./scripts/guzum.iconset
-./guzum.dmg
-./.qmake.stash
+/guzum
+/guzum.app
+/scripts/guzum.icns
+/scripts/guzum.iconset
+/guzum.dmg
+/.qmake.stash
