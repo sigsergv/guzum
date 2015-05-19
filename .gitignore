@@ -14,3 +14,10 @@ Makefile
 /scripts/guzum.iconset
 /guzum.dmg
 /.qmake.stash
+/build-stamp
+/builddir
+/debian/files
+/debian/guzum.debhelper.log
+/debian/guzum.substvars
+/debian/guzum
+
