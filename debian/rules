@@ -4,7 +4,7 @@ builddir:
 	mkdir -p builddir
 
 builddir/Makefile: builddir
-	cd builddir && qmake-qt4 PREFIX=/usr ../$(APPNAME).pro "CONFIG+=release"
+	cd builddir && qmake -qt=5 PREFIX=/usr ../$(APPNAME).pro "CONFIG+=release"
 
 build: build-stamp
 
