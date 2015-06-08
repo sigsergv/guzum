@@ -37,7 +37,9 @@ void help(QString program)
 int main(int argv, char *_args[])
 {
     QApplication app(argv, _args);
-
+#ifdef Q_OS_MAC
+    setenv("PATH", "/usr/local/bin:/bin:/usr/bin", 1);
+#endif
     // load localization
     QTranslator translator;
     translator.load("guzum_" + Guzum::Config::uiLang(), Guzum::Config::uiLangsPath());
