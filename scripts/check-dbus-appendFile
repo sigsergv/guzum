@@ -1,3 +1,0 @@
-#!/bin/sh
-
-dbus-send --print-reply --dest=com.regolit.guzum.tray /Tray com.regolit.guzum.tray.appendFile string:AAABBB

@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/translators">
+  <!-- add new translation files here -->
+  <file alias="ru.qm">guzum-ru.qm</file>
+</qresource>
+</RCC>

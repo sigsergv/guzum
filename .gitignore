@@ -7,6 +7,8 @@ qrc_*.cpp
 src/ui_*.h
 Makefile
 .DS_Store
+build
+/obj-x86_64-linux-gnu
 
 /guzum
 /guzum.app
@@ -20,4 +22,6 @@ Makefile
 /debian/guzum.debhelper.log
 /debian/guzum.substvars
 /debian/guzum
+/debian/tmp
+/debian/.debhelper
 

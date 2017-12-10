@@ -10,6 +10,7 @@
 #include<QtGui>
 
 #include "aboutdialog.h"
+#include "settings.h"
 #include "ui_aboutdialog.h"
 
 struct AboutDialog::Private
