@@ -1,15 +1,15 @@
 #!/bin/bash
 
-APP_PACKAGE=../guzum.app
-DMG_PACKAGE=../guzum.dmg
-TEMPDIR=./tmp-guzum-dmg
+APP_PACKAGE=guzum.app
+DMG_PACKAGE=guzum.dmg
+TEMPDIR=./tmp-dmg
 
 rm -rf $TEMPDIR
 
 mkdir $TEMPDIR
 
 # copy package
-cp -r $APP_PACKAGE $TEMPDIR
+cp -Rp $APP_PACKAGE $TEMPDIR
 
 # create symlink to /Applications
 ln -s /Applications $TEMPDIR/Applications

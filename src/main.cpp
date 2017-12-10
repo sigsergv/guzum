@@ -8,54 +8,23 @@
 #define QT_USE_FAST_CONCATENATION
 #define QT_USE_FAST_OPERATOR_PLUS
 
-#include <QtCore>
-#include <QtGui>
-#include <QtNetwork>
+#include <QtWidgets>
 #include <QtDebug>
-#include <QApplication>
 
 #include "settings.h"
-#include "encryptedtextwindow.h"
-#include "traymanager.h"
 #include "controlpeer.h"
-
-#include "iostream"
-
-enum Mode {ModeNone, ModeEditFile, ModeTrayService} ;
-
-void help(QString program)
-{
-    std::cout << "Usage:\n    " << program.toStdString() << " [args] [FILENAME] [GNUPGHOME]\n";
-    std::cout << "Arguments:\n";
-    std::cout << "    --help, -h        show this help\n";
-    std::cout << "    --select-file     show file selection dialog\n";
-    std::cout << "    [FILENAME]        open this encrypted file in the editor\n";
-    std::cout << "    [GNUPGHOME]       optional GNUPGHOME directory\n";
-    std::cout << std::endl;
-}
+#include "traymanager.h"
 
 int main(int argv, char *_args[])
 {
     QApplication app(argv, _args);
+
 #ifdef Q_OS_MAC
     setenv("PATH", "/usr/local/bin:/bin:/usr/bin", 1);
 #endif
-    // load localization
-    QTranslator translator;
-    translator.load("guzum_" + Guzum::Config::uiLang(), Guzum::Config::uiLangsPath());
-    app.installTranslator(&translator);
 
-    // parse command line to determine what to do
-    // available command line keys:
-    // --tray : start as tray icon (prevent multiple instances)
-    // filepath : open file in the editor
     QStringList args = QCoreApplication::arguments();
     Guzum::Config::initSettings();
-
-    if (args.contains("-h") || args.contains("--help")) {
-        help(args[0]);
-        return 0;
-    }
 
     ControlPeer * controlPeer = ControlPeer::instance();
 
@@ -63,7 +32,7 @@ int main(int argv, char *_args[])
         // initialize notification area icon
         TrayManager::instance();
     }
-    
+
     switch (controlPeer->mode()) {
     case ControlPeer::ModeUndefined:
         qWarning("Cannot initialize peer, terminating");
@@ -86,8 +55,9 @@ int main(int argv, char *_args[])
         return 0;
     }
 
-
     app.setQuitOnLastWindowClosed(false);
+
+    qDebug() << "guzum successfully initialized.";
 
     return app.exec();    
 }

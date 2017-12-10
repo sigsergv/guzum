@@ -1,0 +1,4 @@
+#!/usr/bin/dh-exec
+
+guzum.desktop => usr/share/applications/guzum.desktop
+resources/icons/64x64/Guzum.png => usr/share/icons/hicolor/64x64/guzum.png
