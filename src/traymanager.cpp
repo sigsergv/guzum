@@ -9,6 +9,7 @@
 #include <QtWidgets>
 
 #include "traymanager.h"
+#include "macos.h"
 #include "prefsdialog.h"
 #include "managehistorydialog.h"
 #include "aboutdialog.h"
@@ -63,6 +64,10 @@ TrayManager::TrayManager(QObject * parent)
             this, SLOT(quit()));
     connect(selectFileDialogAction, SIGNAL(triggered()),
             this, SLOT(selectFilename()));
+
+    QApplication * app = Guzum::Config::app();
+    connect(app, SIGNAL(lastWindowClosed()),
+        this, SLOT(lastWindowClosed()));
     
     // for future use
     //connect(p->trayMenu, SIGNAL(hovered(QAction*)),
@@ -222,7 +227,14 @@ void TrayManager::reloadFilenames()
         }
     }
     settings->endGroup();
+}
 
+void TrayManager::lastWindowClosed()
+{
+#ifdef Q_OS_MAC
+    // hide dock icon
+    setDockIconStyle(true);
+#endif
 }
 
 void TrayManager::rebuildFilenamesMenu()

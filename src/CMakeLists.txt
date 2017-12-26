@@ -15,7 +15,7 @@ if(APPLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME "Guzum")
 
     set(myApp_ICON ${CMAKE_CURRENT_SOURCE_DIR}/../resources/icons/guzum.icns)
-    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../resources/icons/guzum-tbm.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../resources/icons/guzum.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework Cocoa")
 endif()

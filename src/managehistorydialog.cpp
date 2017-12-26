@@ -10,6 +10,7 @@
 #include <QtDebug>
 
 #include "settings.h"
+#include "macos.h"
 #include "managehistorydialog.h"
 #include "ui_managehistorydialog.h"
 
@@ -63,6 +64,11 @@ ManageHistoryDialog::ManageHistoryDialog(QWidget * parent, Qt::WindowFlags f)
         }
     }
     settings->endGroup();
+
+#ifdef Q_OS_MAC
+    // show app icon in osx dock
+    setDockIconStyle(false);
+#endif
 }
 
 ManageHistoryDialog::~ManageHistoryDialog()

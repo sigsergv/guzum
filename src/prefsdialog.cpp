@@ -9,7 +9,7 @@
 #include <QtCore>
 
 #include "prefsdialog.h"
-
+#include "macos.h"
 #include "ui_prefsdialog.h"
 
 struct PrefsDialog::Private
@@ -66,6 +66,10 @@ PrefsDialog::PrefsDialog(QWidget * parent, Qt::WindowFlags f)
     connect(p->ui.autoStartCheckbox, SIGNAL(stateChanged(int)),
             this, SLOT(setAutostartToggle(int)));
 
+#ifdef Q_OS_MAC
+    // show app icon in osx dock
+    setDockIconStyle(false);
+#endif
 }
 
 PrefsDialog::~PrefsDialog()

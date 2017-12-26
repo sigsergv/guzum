@@ -14,6 +14,7 @@
 #include "settings.h"
 #include "controlpeer.h"
 #include "traymanager.h"
+#include "macos.h"
 
 int main(int argv, char *_args[])
 {
@@ -24,7 +25,7 @@ int main(int argv, char *_args[])
 #endif
 
     QStringList args = QCoreApplication::arguments();
-    Guzum::Config::initSettings();
+    Guzum::Config::initSettings(&app);
 
     ControlPeer * controlPeer = ControlPeer::instance();
 
@@ -57,7 +58,10 @@ int main(int argv, char *_args[])
 
     app.setQuitOnLastWindowClosed(false);
 
-    qDebug() << "guzum successfully initialized.";
+#ifdef Q_OS_MAC
+    // hide dock icon
+    setDockIconStyle(true);
+#endif
 
     return app.exec();    
 }

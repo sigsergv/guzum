@@ -11,6 +11,7 @@
 
 #include "aboutdialog.h"
 #include "settings.h"
+#include "macos.h"
 #include "ui_aboutdialog.h"
 
 struct AboutDialog::Private
@@ -27,6 +28,11 @@ AboutDialog::AboutDialog(QWidget * parent, Qt::WindowFlags f)
     p->ui.versionLabel->setText(tr("version %1").arg(GUZUM_VERSION));
     p->ui.qtCompiledVersionLabel->setText(tr("Compiled with Qt %1").arg(qVersion()));
     p->ui.qtVersionLabel->setText(tr("Runtime version %1").arg(QT_VERSION_STR));
+
+#ifdef Q_OS_MAC
+    // show app icon in osx dock
+    setDockIconStyle(false);
+#endif
 }
 
 AboutDialog::~AboutDialog()

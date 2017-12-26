@@ -30,6 +30,7 @@ protected slots:
     void showAboutDialog();
     void manageHistory();
     void menuHovered(QAction * action);
+    void lastWindowClosed();
 
 protected:
     void dumpFilenames();

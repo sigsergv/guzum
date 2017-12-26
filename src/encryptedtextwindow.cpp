@@ -8,10 +8,10 @@
 #include <QtCore>
 #include <QtWidgets>
 #include <QtDebug>
-#include <QLabel>
 
 #include "encryptedtextwindow.h"
 #include "settings.h"
+#include "macos.h"
 #include "gpgmewrapper.h"
 #include "traymanager.h"
 #include "aboutdialog.h"
@@ -160,6 +160,11 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, const QString
     p->saveAction = saveAction;
 
     p->editor->installEventFilter(this);
+    
+#ifdef Q_OS_MAC
+    // show app icon in osx dock
+    setDockIconStyle(false);
+#endif
 }
 
 EncryptedTextWindow::~EncryptedTextWindow()
