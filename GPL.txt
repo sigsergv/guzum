@@ -1,4 +1,4 @@
-ssh-tbm is a SSH tunnel manager application
+guzum is a simple text editor for gpg-encrypted files
 
 Copyright © 2017  Sergey Stolyarov <sergei@regolit.com>
 

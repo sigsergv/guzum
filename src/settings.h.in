@@ -9,19 +9,14 @@
 
 #define GUZUM_VERSION "@GUZUM_VERSION@"
 
-#include <QString>
-#include <QChar>
-#include <QList>
-
-class QSettings;
-class QWidget;
-class QString;
+#include <QtCore>
+#include <QtWidgets>
 
 namespace Guzum
 {
 namespace Config
 {
-    void initSettings();
+    void initSettings(QApplication * app);
     QSettings * settings();
     QString version();
     QString uiLang();
@@ -30,6 +25,7 @@ namespace Config
     QString filenameInProfile(const QString & filename);
     QString extUrlNamespace();
     QString controlSocketPath();
+    QApplication * app();
 }
 }
 

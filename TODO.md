@@ -3,3 +3,4 @@
 * allow new document creation
 * add signature support
 * add language selector
+* *MACOS* bring editor to foreground
