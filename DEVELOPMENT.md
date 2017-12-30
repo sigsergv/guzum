@@ -28,7 +28,7 @@ Build instructions:
 $ mkdir build
 $ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Debug ..
-$ make
+$ cmake --build .
 ~~~~~
 
 To see debug output you must create file `~/.config/QtProject/qtlogging.ini`.
@@ -71,7 +71,7 @@ $ rm -rf build
 $ mkdir build
 $ cd build
 $ cmake -DCMAKE_BUILD_TYPE=Release ..
-$ make
+$ cmake --build .
 ~~~~~
 
 Use macdeployqt to prepare bundle (inside directory `build`):
