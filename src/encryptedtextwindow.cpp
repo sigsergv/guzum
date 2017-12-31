@@ -233,6 +233,10 @@ bool EncryptedTextWindow::show()
 
         TrayManager * tm = TrayManager::instance();
         tm->appendFile(p->filename, gpg->gpgHomeDir());
+
+        // bring window to front
+        raise();
+        activateWindow();
         return true;
     }
 }

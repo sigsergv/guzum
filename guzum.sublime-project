@@ -13,12 +13,12 @@
         "shell": true,
 
         "linux": {
-            "cmd": ["make"]
+            "cmd": ["cmake --build ."]
         },
 
         "osx": {
-            //"cmd": ["make && ./guzum.app/Contents/MacOS/guzum"]
-            "cmd": ["make"]
+            "cmd": ["cmake --build . && ./guzum.app/Contents/MacOS/guzum"]
+            // "cmd": ["cmake --build ."]
         }
 
     }]

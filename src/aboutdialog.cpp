@@ -37,3 +37,12 @@ AboutDialog::~AboutDialog()
 {
     delete p;
 }
+
+int AboutDialog::exec()
+{
+    QDialog::show();
+    // bring window to front
+    raise();
+    activateWindow();
+    return QDialog::exec();
+}

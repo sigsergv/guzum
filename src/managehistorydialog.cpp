@@ -78,6 +78,11 @@ ManageHistoryDialog::~ManageHistoryDialog()
 
 int ManageHistoryDialog::exec()
 {
+    QDialog::show();
+    // bring window to front
+    raise();
+    activateWindow();
+    
     int res = QDialog::exec();
     if (res == QDialog::Accepted) {
         // write items back to the settings
