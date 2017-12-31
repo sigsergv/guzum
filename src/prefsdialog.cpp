@@ -10,6 +10,7 @@
 
 #include "prefsdialog.h"
 #include "macos.h"
+#include "settings.h"
 #include "ui_prefsdialog.h"
 
 struct PrefsDialog::Private
@@ -24,6 +25,10 @@ PrefsDialog::PrefsDialog(QWidget * parent, Qt::WindowFlags f)
 {
     p = new Private;
     p->ui.setupUi(this);
+
+    // fill uiLanguageCombo with available languages
+    p->ui.uiLanguageCombo->addItem("English", "en");
+    p->ui.uiLanguageCombo->addItem("Русский", "ru");
 
     // load desktop file template from the resources
     QFile file(":/guzum-template.desktop");
@@ -62,9 +67,15 @@ PrefsDialog::PrefsDialog(QWidget * parent, Qt::WindowFlags f)
         p->ui.autoStartCheckbox->setDisabled(true);
     }
 
+    auto lang = Guzum::Config::uiLang();
+    auto index = p->ui.uiLanguageCombo->findData(lang);
+    p->ui.uiLanguageCombo->setCurrentIndex(index);
+
     // connect actions
     connect(p->ui.autoStartCheckbox, SIGNAL(stateChanged(int)),
-            this, SLOT(setAutostartToggle(int)));
+        this, SLOT(setAutostartToggle(int)));
+    connect(p->ui.uiLanguageCombo, SIGNAL(activated(int)), 
+        this, SLOT(uiLanguageChanged(int)));
 
 #ifdef Q_OS_MAC
     // show app icon in osx dock
@@ -104,4 +115,10 @@ void PrefsDialog::setAutostartToggle(int state)
             file.close();
         }
     }
+}
+
+void PrefsDialog::uiLanguageChanged(int index)
+{
+    auto lang = p->ui.uiLanguageCombo->itemData(index).toString();
+    Guzum::Config::setUiLang(lang);
 }
