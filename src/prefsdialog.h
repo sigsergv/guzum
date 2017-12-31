@@ -22,6 +22,7 @@ public slots:
 
 protected slots:
     void setAutostartToggle(int state);
+    void uiLanguageChanged(int index);
 
 private:
     struct Private;

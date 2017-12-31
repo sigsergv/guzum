@@ -13,11 +13,14 @@
 static QSettings * _settings = 0;
 static QString uiLangsPath;
 static QApplication * _app = 0;
+static QTranslator * _translator = 0;
 
 namespace Guzum
 {
 namespace Config
 {
+
+static const QStringList ALLOWED_LANGUAGES = {"en", "ru"};
 
 // explicitly initialize settings
 void initSettings(QApplication * app)
@@ -30,6 +33,10 @@ void initSettings(QApplication * app)
 
     ::_settings = new QSettings(profilePath() + "/guzum.ini", QSettings::IniFormat);
     ::_app = app;
+
+    ::_translator = new QTranslator();
+    ::_translator->load(":/translators/"+uiLang()+".qm");
+    QCoreApplication::installTranslator(::_translator);
 }
 
 QSettings * settings()
@@ -37,9 +44,39 @@ QSettings * settings()
     return ::_settings; 
 }
 
+QTranslator * translator()
+{
+    return ::_translator;
+}
+
 QString uiLang()
 {
-    return "ru";
+    auto s = settings();
+
+    s->beginGroup("ui");
+    auto lang = s->value("language", "en").toString();
+    if (!ALLOWED_LANGUAGES.contains(lang)) {
+        lang = "en";
+    }
+    s->endGroup();
+
+    return lang;
+}
+
+void setUiLang(const QString & newLang)
+{
+    auto lang = newLang;
+    if (!ALLOWED_LANGUAGES.contains(lang)) {
+        lang = "en";
+    }
+
+    auto s = settings();
+
+    s->beginGroup("ui");
+    s->setValue("language", lang);
+    s->endGroup();
+
+    ::_translator->load(":/translators/"+ lang +".qm");
 }
 
 QString uiLangsPath()

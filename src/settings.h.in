@@ -18,14 +18,17 @@ namespace Config
 {
     void initSettings(QApplication * app);
     QSettings * settings();
+    QTranslator * translator();
     QString version();
     QString uiLang();
+    void setUiLang(const QString & newLang);
     QString uiLangsPath();
     QString profilePath();
     QString filenameInProfile(const QString & filename);
     QString extUrlNamespace();
     QString controlSocketPath();
     QApplication * app();
+
 }
 }
 
