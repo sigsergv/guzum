@@ -2,5 +2,5 @@
 ** warn if key without secret part has been selected
 * allow new document creation
 * add signature support
-* add language selector
-* *MACOS* bring editor to foreground
+* (v) add language selector
+* (v) *MACOS* bring editor to foreground
