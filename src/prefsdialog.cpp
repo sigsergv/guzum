@@ -79,6 +79,10 @@ PrefsDialog::~PrefsDialog()
 
 int PrefsDialog::exec()
 {
+    QDialog::show();
+    // bring window to front
+    raise();
+    activateWindow();
     // prepare dialog: set checkboxes etc
     return QDialog::exec();
 }

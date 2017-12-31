@@ -17,6 +17,9 @@ public:
     AboutDialog(QWidget * parent = 0, Qt::WindowFlags f = 0);
     ~AboutDialog();
 
+public slots:
+    int exec();
+
 private:
     struct Private;
     Private * p;

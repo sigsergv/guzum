@@ -19,6 +19,7 @@
 int main(int argv, char *_args[])
 {
     QApplication app(argv, _args);
+    qDebug() << "running in DEBUG mode";
 
 #ifdef Q_OS_MAC
     setenv("PATH", "/usr/local/bin:/bin:/usr/bin", 1);
