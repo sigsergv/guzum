@@ -53,7 +53,7 @@ gpgme_error_t passphraseCallback(void * hook, const char * uid_hint,
 {
     Q_UNUSED(passphrase_info);
 
-    CallbackData * cbData = static_cast<CallbackData *>(hook);
+    auto cbData = static_cast<CallbackData *>(hook);
     PassphraseDialog passDlg(cbData->parent);
     passDlg.setUid(uid_hint);
     if (prev_was_bad) {
@@ -63,8 +63,8 @@ gpgme_error_t passphraseCallback(void * hook, const char * uid_hint,
         return GPG_ERR_CANCELED;
     }
 
-    QString pass = passDlg.passphrase() + "\n";
-    QByteArray passBytes = pass.toLatin1();
+    auto pass = passDlg.passphrase() + "\n";
+    auto passBytes = pass.toLatin1();
     write(fd, passBytes.constData(), passBytes.size());
     return GPG_ERR_NO_ERROR;
 }
@@ -90,7 +90,7 @@ GPGME_Error GPGME::init(const QString & gpgHomeDir)
         return err;
     }
 
-    QString protocolName =  gpgme_get_protocol_name(GPGME_PROTOCOL_OpenPGP);
+    QString protocolName(gpgme_get_protocol_name(GPGME_PROTOCOL_OpenPGP));
     qDebug() << "protocol: " << protocolName;
 
     gpgme_engine_info_t engineInfo;
@@ -138,7 +138,7 @@ GPGME_Error GPGME::init(const QString & gpgHomeDir)
         return err;
     }
 
-    GPGME * inst = new GPGME(context, gnupgHome);
+    auto inst = new GPGME(context, gnupgHome);
     instancesStore[gpgHomeDir] = inst;
     qDebug() << "gpgme initalized for the directory " << gnupgHome << "[store key: " << gpgHomeDir << "]";
 

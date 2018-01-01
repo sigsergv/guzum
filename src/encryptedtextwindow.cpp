@@ -54,26 +54,27 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, const QString
 
     // compute filename hashsum, it's used for storing settings for example
     QCryptographicHash h(QCryptographicHash::Sha1);
-    QByteArray utfData = p->filename.toUtf8();
+    auto utfData = p->filename.toUtf8();
     h.addData(utfData.constData(), utfData.length());
     p->filenameHash = h.result().toHex();
 
-    QSettings * settings = Guzum::Config::settings();
+    auto settings = Guzum::Config::settings();
 
     // create actions
-    QAction * quitAction = new QAction(tr("&Quit"), this);
-    QAction * aboutAction = new QAction(tr("&About Guzum"), this);
-    QAction * saveAction = new QAction(QIcon(":/save-22x22.png"), tr("&Save file"), this);
-    QAction * changeCurrentFontAction = new QAction(QIcon(":/text-22x22.png"), tr("Change current font"), this);
-    QAction * changeDefaultFontAction = new QAction(tr("Set default &font"), this);
-    QAction * insertRandomStringAction = new QAction(QIcon(":/insert-text-22x22.png"), tr("Insert random string in the caret position"), this);
+    auto quitAction = new QAction(tr("&Quit"), this);
+    auto aboutAction = new QAction(tr("&About Guzum"), this);
+    auto saveAction = new QAction(QIcon(":/save-22x22.png"), tr("&Save file"), this);
+    auto changeCurrentFontAction = new QAction(QIcon(":/text-22x22.png"), tr("Change current font"), this);
+    auto changeDefaultFontAction = new QAction(tr("Set default &font"), this);
+    auto insertRandomStringAction = new QAction(QIcon(":/insert-text-22x22.png"), 
+        tr("Insert random string in the caret position"), this);
 
     saveAction->setShortcut(QKeySequence(Qt::Key_S + Qt::CTRL));
     saveAction->setDisabled(true);
 
     // create widgets
     p->timerLabel = new QLabel("00:00");
-    QFont font = p->timerLabel->font();
+    auto font = p->timerLabel->font();
     font.setBold(true);
     p->timerLabel->setFont(font);
     p->timerLabel->setToolTip(tr("Time remaining to automatical window close"));
@@ -102,11 +103,11 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, const QString
             this, SLOT(closeTimerTick()));
 
     // add basic control elements: top toolbar (fixed, not movable/resizeable), buttons on that toolbar, mainmenu
-    QMenu * fileMenu = menuBar()->addMenu(tr("&File"));
+    auto fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(saveAction);
     fileMenu->addAction(changeDefaultFontAction);
     fileMenu->addAction(quitAction);
-    QMenu * helpMenu = menuBar()->addMenu(tr("&Help"));
+    auto helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAction);
 
     p->topToolBar = new QToolBar(this);
@@ -139,7 +140,7 @@ EncryptedTextWindow::EncryptedTextWindow(const QString & filename, const QString
     key = QString("%1-state").arg(p->filenameHash);
     restoreState(settings->value(key).toByteArray());
     key = QString("%1-font").arg(p->filenameHash);
-    QVariant value = settings->value(key);
+    auto value = settings->value(key);
     settings->endGroup();
     if (value.canConvert<QFont>()) {
         p->editor->setFont(value.value<QFont>());
@@ -180,8 +181,8 @@ void EncryptedTextWindow::close()
 bool EncryptedTextWindow::show()
 {
     // now try to decrypt and load data from the file
-    GPGME * gpg = GPGME::instance(p->gnupgHome);
-    QByteArray decrypted = gpg->decryptFile(p->filename, p->gpgUid, this);
+    auto gpg = GPGME::instance(p->gnupgHome);
+    auto decrypted = gpg->decryptFile(p->filename, p->gpgUid, this);
     if (gpg->error() != GPG_ERR_NO_ERROR) {
         // failed to decrypt file
         QString errorMessage;
@@ -227,7 +228,7 @@ bool EncryptedTextWindow::show()
     } else {
         // load data into the editor
         // TODO: guess encoding? Assume it's UTF-8 for now
-        QString contents = QString::fromUtf8(decrypted.constData());
+        auto contents = QString::fromUtf8(decrypted.constData());
         p->editor->setPlainText(contents);
         QMainWindow::show();
 
@@ -254,8 +255,8 @@ void EncryptedTextWindow::saveFile()
     if (p->gpgUid.isEmpty()) {
         return;
     }
-    GPGME * gpg = GPGME::instance(p->gnupgHome);
-    QByteArray data = p->editor->toPlainText().toUtf8();
+    auto gpg = GPGME::instance(p->gnupgHome);
+    auto data = p->editor->toPlainText().toUtf8();
     gpg->encryptBytesToFile(data, p->filename, p->gpgUid);
     if (gpg->error() != GPG_ERR_NO_ERROR) {
         QString errorMessage;
@@ -303,14 +304,14 @@ void EncryptedTextWindow::saveFile()
 void EncryptedTextWindow::changeCurrentFont()
 {
     bool ok;
-    QFont currentFont = p->editor->font();
-    QFont font = QFontDialog::getFont(&ok, currentFont, this);
+    auto currentFont = p->editor->font();
+    auto font = QFontDialog::getFont(&ok, currentFont, this);
     // change window font, also remember it in the settings
     if (ok) {
         p->editor->setFont(font);
-        QSettings * settings = Guzum::Config::settings();
+        auto settings = Guzum::Config::settings();
         settings->beginGroup("Windows");
-        QString key = QString("%1-font").arg(p->filenameHash);
+        auto key = QString("%1-font").arg(p->filenameHash);
         settings->setValue(key, font);
         settings->endGroup();
     }
@@ -319,10 +320,10 @@ void EncryptedTextWindow::changeCurrentFont()
 void EncryptedTextWindow::changeDefaultFont()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, this);
+    auto font = QFontDialog::getFont(&ok, this);
 
     if (ok) {
-        QSettings * settings = Guzum::Config::settings();
+        auto settings = Guzum::Config::settings();
         settings->beginGroup("Defaults");
         settings->setValue("font", font);
         settings->endGroup();
@@ -381,7 +382,7 @@ void EncryptedTextWindow::editorModificationChanged(bool changed)
 
 void EncryptedTextWindow::rememberGeometryAndState()
 {
-    QSettings * settings = Guzum::Config::settings();
+    auto settings = Guzum::Config::settings();
     QString key;
     settings->beginGroup("Windows");
     key = QString("%1-geometry").arg(p->filenameHash);
@@ -408,7 +409,7 @@ void EncryptedTextWindow::resizeEvent(QResizeEvent * event)
 
 void EncryptedTextWindow::closeEvent(QCloseEvent *event)
 {
-    QSettings * settings = Guzum::Config::settings();
+    auto settings = Guzum::Config::settings();
 
     // write layout settings and sync
     rememberGeometryAndState();

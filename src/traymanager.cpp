@@ -38,11 +38,11 @@ TrayManager::TrayManager(QObject * parent)
     p->trayMenu = new QMenu();
 
     // create actions
-    QAction * manageHistoryAction = new QAction(tr("&Manage history"), this);
-    QAction * selectFileDialogAction = new QAction(tr("&Open file…"), this);
-    QAction * prefsAction = new QAction(tr("&Preferences…"), this);
-    QAction * aboutAction = new QAction(tr("&About Guzum"), this);
-    QAction * quitAction = new QAction(tr("&Quit Guzum"), this);
+    auto manageHistoryAction = new QAction(tr("&Manage history"), this);
+    auto selectFileDialogAction = new QAction(tr("&Open file…"), this);
+    auto prefsAction = new QAction(tr("&Preferences…"), this);
+    auto aboutAction = new QAction(tr("&About Guzum"), this);
+    auto quitAction = new QAction(tr("&Quit Guzum"), this);
 
     // create menu items
     p->filenamesSeparatorAction = p->trayMenu->addSeparator();
@@ -65,7 +65,7 @@ TrayManager::TrayManager(QObject * parent)
     connect(selectFileDialogAction, SIGNAL(triggered()),
             this, SLOT(selectFilename()));
 
-    QApplication * app = Guzum::Config::app();
+    auto app = Guzum::Config::app();
     connect(app, SIGNAL(lastWindowClosed()),
         this, SLOT(lastWindowClosed()));
     
@@ -104,8 +104,8 @@ void TrayManager::quit()
 void TrayManager::appendFile(const QString & filename, const QString & gnupgHome)
 {
     // first try to find filename in the list and pop it to the top if there is one
-    int len = p->trayFilenames.size();
-    int ind = -1;
+    auto len = p->trayFilenames.size();
+    auto ind = -1;
     for (int i=0; i<len; i++) {
         QStringsHash item = p->trayFilenames[i];
         if (item["filename"] == filename) {
@@ -131,19 +131,19 @@ void TrayManager::appendFile(const QString & filename, const QString & gnupgHome
 void TrayManager::openFilename()
 {
     // first find what action has been triggered, extract filename and open it
-    QAction * action = qobject_cast<QAction*>(sender());
-    QStringsHash item = action->data().toHash();
+    auto action = qobject_cast<QAction*>(sender());
+    auto item = action->data().toHash();
 
-    QString filename = item["filename"].toString();
-    QString gnupgHome = item["gnupghome"].toString();
+    auto filename = item["filename"].toString();
+    auto gnupgHome = item["gnupghome"].toString();
 
-    ControlPeer * peer = ControlPeer::instance();
+    auto peer = ControlPeer::instance();
     peer->editFile(filename, gnupgHome);
 }
 
 void TrayManager::selectFilename()
 {
-    ControlPeer * peer = ControlPeer::instance();
+    auto peer = ControlPeer::instance();
     peer->showFileSelectorDialog();
 }
 
@@ -170,7 +170,7 @@ void TrayManager::manageHistory()
 void TrayManager::menuHovered(QAction * action)
 {
     // find action first
-    bool found = false;
+    auto found = false;
     Q_FOREACH (QAction * a, p->trayFilenamesActions) {
         if (a == action) {
             found = true;
@@ -186,14 +186,13 @@ void TrayManager::menuHovered(QAction * action)
 
 void TrayManager::dumpFilenames()
 {
-    QSettings * settings = Guzum::Config::settings();
+    auto settings = Guzum::Config::settings();
     settings->beginGroup("TrayMenuItems");
     settings->remove(""); // remove all keys in the group
-    int n = 0;
-    QString key;
+    auto n = 0;
     Q_FOREACH (const QStringsHash item, p->trayFilenames) {
         n++;
-        key = QString("item-%1").arg(n, 2, 10, QLatin1Char('0')); // form name like "item-64"
+        auto key = QString("item-%1").arg(n, 2, 10, QLatin1Char('0')); // form name like "item-64"
         settings->setValue(key, item);
     }
     settings->endGroup();
@@ -204,14 +203,14 @@ void TrayManager::reloadFilenames()
 {
     p->trayFilenames.clear();
 
-    QSettings * settings = Guzum::Config::settings();
+    auto settings = Guzum::Config::settings();
     settings->beginGroup("TrayMenuItems");
     Q_FOREACH (const QString key, settings->allKeys()) {
-        QVariant v = settings->value(key);
+        auto v = settings->value(key);
         if (v.canConvert< QHash<QString, QVariant> >()) {
             QHash<QString, QVariant> value = v.toHash();
             if (value.contains("filename")) {
-                QVariant vf = value["filename"];
+                auto vf = value["filename"];
                 QStringsHash item;
 
                 if (vf.canConvert<QString>()) {
