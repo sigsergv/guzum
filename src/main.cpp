@@ -15,32 +15,51 @@
 #include "controlpeer.h"
 #include "traymanager.h"
 #include "macos.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+void print_help()
+{
+    QString msg = "Guzum.\n"
+        "Without arguments\n    start in notification area icon mode.\n\n"
+        "guzum FILENAME\n    try to open FILENAME in secure editor\n\n"
+        "guzum --select-file\n    open file selector\n\n";
+    fprintf(stdout, "%s", msg.toLocal8Bit().constData());
+}
 
 int main(int argv, char *_args[])
 {
     QApplication app(argv, _args);
-    qDebug() << "running in DEBUG mode";
+    qDebug() << "Starting in DEBUG mode";
 
 #ifdef Q_OS_MAC
+    // we need to fix PATH and add /usr/local/bin where gpg binary is usually located
     setenv("PATH", "/usr/local/bin:/bin:/usr/bin", 1);
 #endif
 
-    QStringList args = QCoreApplication::arguments();
-    Guzum::Config::initSettings(&app);
-
-    ControlPeer * controlPeer = ControlPeer::instance();
-
-    if (controlPeer->mode() == ControlPeer::ModeServer) {
-        // initialize notification area icon
-        TrayManager::instance();
+    auto args = QCoreApplication::arguments();
+    if (args.contains("--help") || args.contains("-h")) {
+        print_help();
+        return 0;
     }
 
-    switch (controlPeer->mode()) {
-    case ControlPeer::ModeUndefined:
+    Guzum::Config::initSettings(&app);
+
+    auto controlPeer = ControlPeer::instance();
+    auto controlPeerMode = controlPeer->mode();
+
+    if (controlPeerMode == ControlPeer::ModeServer) {
+        // initialize notification area icon
+        qDebug("Starting Guzum in server mode");
+        TrayManager::instance();
+    } else if (controlPeerMode == ControlPeer::ModeClient) {
+        qDebug("Starting Guzum in client mode");
+    } else {
         qWarning("Cannot initialize peer, terminating");
         return 1;
-        break;
+    }
 
+    switch (controlPeerMode) {
     case ControlPeer::ModeClient:
     case ControlPeer::ModeServer:
         if (args.contains("--select-file")) {
@@ -51,9 +70,14 @@ int main(int argv, char *_args[])
             controlPeer->editFile(args[1], args[2]);
         }
         break;
+    case ControlPeer::ModeUndefined:
+        // nothing to do here
+        break;
     }
 
-    if (controlPeer->mode() == ControlPeer::ModeClient) {
+    if (controlPeerMode == ControlPeer::ModeClient) {
+        // quit app as we don't do anything in client mode, just
+        // passed commands to server and that's enough
         return 0;
     }
 

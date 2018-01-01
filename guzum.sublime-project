@@ -17,8 +17,8 @@
         },
 
         "osx": {
-            "cmd": ["cmake --build . && ./guzum.app/Contents/MacOS/guzum"]
-            // "cmd": ["cmake --build ."]
+            // "cmd": ["cmake --build . && ./guzum.app/Contents/MacOS/guzum"]
+            "cmd": ["cmake --build ."]
         }
 
     }]

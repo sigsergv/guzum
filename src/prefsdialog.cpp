@@ -41,7 +41,7 @@ PrefsDialog::PrefsDialog(QWidget * parent, Qt::WindowFlags f)
 
     setWindowIcon(QIcon(":/guzum-16.png"));
     // detect is guzum in autostart mode: check file "~/.config/autostart/guzum.desktop"
-    QDir homeDir = QDir::home();
+    auto homeDir = QDir::home();
     
     // try to create dir, check later
     QString path = ".config/autostart";

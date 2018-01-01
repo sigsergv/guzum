@@ -187,7 +187,7 @@ void ControlPeer::showFileSelectorDialog()
     if (mode() == ModeServer) {
         QString editFilename;
         // read last used dir name from the settings
-        QSettings * settings = Guzum::Config::settings();
+        auto settings = Guzum::Config::settings();
         settings->beginGroup("EditFileSelector");
         QString initDir = settings->value("init-dir").toString();
         settings->endGroup();

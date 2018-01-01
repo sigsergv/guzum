@@ -29,12 +29,11 @@ void SecurePlainTextEditor::mouseReleaseEvent(QMouseEvent *)
 void SecurePlainTextEditor::mouseDoubleClickEvent(QMouseEvent *)
 {
     // select word
-    QString text = this->toPlainText();
-    QTextCursor cursor = textCursor();
-
-    int pos = cursor.position();
-
-    int start = pos;
+    auto text = this->toPlainText();
+    auto cursor = textCursor();
+    auto pos = cursor.position();
+    auto start = pos;
+    
     while (start > 0) {
         start--;
         if (text[start].isSpace()) {

@@ -84,7 +84,7 @@ QString uiLangsPath()
     // first check for local paths
     QString localPath = QCoreApplication::applicationDirPath() + QDir::separator() + "translations";
     QDir d(localPath);
-    QStringList files = d.entryList(QDir::Files);
+    auto files = d.entryList(QDir::Files);
     foreach (QString f, files) {
         if (f.endsWith(".qm")) {
             ::uiLangsPath = localPath;
@@ -101,10 +101,10 @@ QString uiLangsPath()
 
         foreach (QString path, checkPaths) {
             QDir d(path);
-            bool found = false;
+            auto found = false;
             if (d.exists()) {
                 // check for *.qm files there
-                QStringList files = d.entryList(QDir::Files);
+                auto files = d.entryList(QDir::Files);
                 foreach (QString f, files) {
                     if (f.endsWith(".qm")) {
                         ::uiLangsPath = path;
@@ -144,7 +144,7 @@ QString _cachePath(const QString & dirname)
 {
     QDir profileDir(profilePath());
 
-    QString path = filenameInProfile(dirname);
+    auto path = filenameInProfile(dirname);
     QFileInfo fi(path);
 
     if (fi.isFile()) {
@@ -166,8 +166,8 @@ QString _cachePath(const QString & dirname)
 
 QString filenameInProfile(const QString & filename)
 {
-    QString profile = profilePath();
-    QString fullFilename = profile + "/" + filename;
+    auto profile = profilePath();
+    auto fullFilename = profile + "/" + filename;
     QDir dir(fullFilename);
 
     return dir.canonicalPath();

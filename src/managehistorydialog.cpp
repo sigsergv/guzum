@@ -39,7 +39,7 @@ ManageHistoryDialog::ManageHistoryDialog(QWidget * parent, Qt::WindowFlags f)
     p->ui.itemsListWidget->setDragDropMode(QAbstractItemView::InternalMove);
 
     // load history items to itemsListWidget
-    QSettings * settings = Guzum::Config::settings();
+    auto settings = Guzum::Config::settings();
     settings->beginGroup("TrayMenuItems");
     Q_FOREACH (const QString key, settings->allKeys()) {
         QVariant v = settings->value(key);
@@ -83,20 +83,19 @@ int ManageHistoryDialog::exec()
     raise();
     activateWindow();
     
-    int res = QDialog::exec();
+    auto res = QDialog::exec();
     if (res == QDialog::Accepted) {
         // write items back to the settings
-        QSettings * settings = Guzum::Config::settings();
+        auto settings = Guzum::Config::settings();
         settings->beginGroup("TrayMenuItems");
         settings->remove("");
-        QString key;
-        int cnt = p->ui.itemsListWidget->count();
+        auto cnt = p->ui.itemsListWidget->count();
         for (int i=0; i<cnt; i++) {
             QListWidgetItem * item = p->ui.itemsListWidget->item(i);
             QStringsHash h;
             h["filename"] = item->data(FilenameRole);
             h["gnupghome"] = item->data(GnupgHomeRole);
-            key = QString("item-%1").arg(i, 2, 10, QLatin1Char('0'));
+            auto key = QString("item-%1").arg(i, 2, 10, QLatin1Char('0'));
             settings->setValue(key, h);
         }
         settings->endGroup();
@@ -108,15 +107,15 @@ int ManageHistoryDialog::exec()
 
 void ManageHistoryDialog::itemSelectionChanged()
 {
-    QList<QListWidgetItem*> selected = p->ui.itemsListWidget->selectedItems();
-    bool disabled = false;
+    auto selected = p->ui.itemsListWidget->selectedItems();
+    auto disabled = false;
 
     if (selected.size() == 0) {
         disabled = true;
         p->ui.filepathLineEdit->setText("");
         p->ui.gnupghomeLineEdit->setText("");
     } else {
-        QListWidgetItem * item = selected.first();
+        auto item = selected.first();
         p->ui.filepathLineEdit->setText(item->data(FilenameRole).toString());
         p->ui.gnupghomeLineEdit->setText(item->data(GnupgHomeRole).toString());
     }
@@ -129,11 +128,11 @@ void ManageHistoryDialog::itemSelectionChanged()
 void ManageHistoryDialog::deleteItem()
 {
     
-    QList<QListWidgetItem*> selected = p->ui.itemsListWidget->selectedItems();
+    auto selected = p->ui.itemsListWidget->selectedItems();
     if (selected.size() == 0) {
         return;
     }
-    QListWidgetItem * item = selected.first();
+    auto item = selected.first();
 
     int row = p->ui.itemsListWidget->row(item);
     p->ui.itemsListWidget->takeItem(row);
@@ -142,21 +141,21 @@ void ManageHistoryDialog::deleteItem()
 
 void ManageHistoryDialog::editingFilename(const QString & text)
 {
-    QList<QListWidgetItem*> selected = p->ui.itemsListWidget->selectedItems();
+    auto selected = p->ui.itemsListWidget->selectedItems();
     if (selected.size() == 0) {
         return;
     }
-    QListWidgetItem * item = selected.first();
+    auto item = selected.first();
     item->setText(text);
     item->setData(FilenameRole, text);
 }
 
 void ManageHistoryDialog::editingGnupgHome(const QString & text)
 {
-    QList<QListWidgetItem*> selected = p->ui.itemsListWidget->selectedItems();
+    auto selected = p->ui.itemsListWidget->selectedItems();
     if (selected.size() == 0) {
         return;
     }
-    QListWidgetItem * item = selected.first();
+    auto item = selected.first();
     item->setData(GnupgHomeRole, text);
 }
