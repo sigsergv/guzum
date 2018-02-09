@@ -12,5 +12,5 @@ Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
 Description: GnuPG encrypted text files viewer and editor
- Allows basic operations on gpg-encrypted files, also provides
-notificaion area icons with most recently opened files.
+ Allows basic operations on gpg-encrypted files, also provides 
+ notificaion area icons with most recently opened files.
