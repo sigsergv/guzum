@@ -74,7 +74,7 @@ TrayManager::TrayManager(QObject * parent)
     //        this, SLOT(menuHovered(QAction*)));
 
     // create system tray icon
-    p->trayIcon = new QSystemTrayIcon(QIcon(":/guzum-16.png"), this);
+    p->trayIcon = new QSystemTrayIcon(QIcon(":/guzum-48.png"), this);
     p->trayIcon->setContextMenu(p->trayMenu);
     p->trayIcon->show();
 
