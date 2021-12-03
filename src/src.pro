@@ -45,7 +45,7 @@ macx {
 
     QMAKE_INFO_PLIST = ../resources/Info.plist
     mactrans.target = mactrans
-    mactrans.commands = lrelease src.pro && cp ../translations/*.qm ../guzum.app/Contents/Resources
+    mactrans.commands = ~/Qt/5.15.2/clang_64/bin/lrelease src.pro && cp ../translations/*.qm ../guzum.app/Contents/Resources
     QMAKE_EXTRA_TARGETS += mactrans
     PRE_TARGETDEPS += mactrans
 }

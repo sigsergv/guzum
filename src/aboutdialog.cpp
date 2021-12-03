@@ -7,6 +7,8 @@
 
 #include <QtDebug>
 
+#include<QtGui>
+
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 

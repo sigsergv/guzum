@@ -3,12 +3,12 @@ qmake CONFIG+=debug
 MacOS
 =====
 
-You need brew installed and gpgme from brew. Also install Qt (5.7 in my case).
+You need brew installed and gpgme from brew. Also install Qt (5.15.2 in my case).
 
     export PATH=$PATH:$HOME/Qt/5.7/clang_64/bin
-    ~/Qt/5.7/clang_64/bin/qmake "CONFIG+=debug"
+    ~/Qt/5.15.2/clang_64/bin/qmake "CONFIG+=debug"
     make
-    ~/Qt/5.7/clang_64/bin/macdeployqt guzum.app -dmg
+    ~/Qt/5.15.2/clang_64/bin/macdeployqt guzum.app -dmg
     open guzum.dmg
 
 MacOS Deployment
@@ -21,12 +21,12 @@ Clean up:
 
 Compile:
 
-    ~/Qt/5.7/clang_64/bin/qmake "CONFIG+=release"
+    ~/Qt/5.15.2/clang_64/bin/qmake "CONFIG+=release"
     make
 
 Prepare:
 
-    ~/Qt/5.7/clang_64/bin/macdeployqt guzum.app
+    ~/Qt/5.15.2/clang_64/bin/macdeployqt guzum.app
 
 Check deps (we need to provide only Qt frameworks):
 
