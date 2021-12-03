@@ -10,7 +10,7 @@ configure_file (
 
 # tell where qt is
 if(APPLE)
-    set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.7/clang_64/lib/cmake)
+    set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.15.2/clang_64/lib/cmake)
 endif()
 
 #if(WIN32)

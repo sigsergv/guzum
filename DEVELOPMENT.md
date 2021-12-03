@@ -4,12 +4,12 @@ Compilation
 basic Requirements
 ------------------
 
-* Qt 5.7
+* Qt 5.12.2
 * gpgme
 * C++ compiler
 * Linux/MacOS
 
-For MacOS you *must* install Qt from official website to default location (~/.Qt). Also you need to install 
+For MacOS you *must* install Qt from official website to default location (\~/.Qt). Also you need to install 
 brew and gpgme package from there.
 
 
@@ -43,7 +43,7 @@ lupdate -no-obsolete -recursive ./src -ts src/guzum-ru.ts
 or (for macos)
 
 ~~~~~
-~/Qt/5.7/clang_64/bin/lupdate -no-obsolete -recursive ./src -ts src/guzum-ru.ts
+~/Qt/5.12.2/clang_64/bin/lupdate -no-obsolete -recursive ./src -ts src/guzum-ru.ts
 ~~~~~
 
 Deployment
@@ -77,7 +77,7 @@ $ cmake --build .
 Use macdeployqt to prepare bundle (inside directory `build`):
 
 ~~~~~
-$ ~/Qt/5.7/clang_64/bin/macdeployqt guzum.app
+$ ~/Qt/5.12.2/clang_64/bin/macdeployqt guzum.app
 ~~~~~
 
 Check deps (we need to provide only Qt frameworks):

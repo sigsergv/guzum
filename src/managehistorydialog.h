@@ -14,7 +14,7 @@ class ManageHistoryDialog : public QDialog
 {
     Q_OBJECT
 public:
-    ManageHistoryDialog(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    ManageHistoryDialog(QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     ~ManageHistoryDialog();
 
 protected:

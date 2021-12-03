@@ -1,10 +1,4 @@
-find_package(Qt5Widgets)
-find_package(Qt5Network)
-find_package(Qt5Test)
-find_package(Qt5LinguistTools)
-#find_package(Qt5Svg REQUIRED)
-#find_package(Qt5Xml REQUIRED)
-#find_package(Gpgmepp)
+find_package(Qt5 COMPONENTS Core Widgets Network LinguistTools Svg Xml Test REQUIRED)
 
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgpgme ")
 
@@ -13,6 +7,10 @@ if(APPLE)
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${GUZUM_VERSION})
     set(MACOSX_BUNDLE_COPYRIGHT "© Copyright 2017 Sergey Stolyarov")
     set(MACOSX_BUNDLE_BUNDLE_NAME "Guzum")
+
+    find_package(Qt5 COMPONENTS MacExtras REQUIRED)
+    include_directories(include /usr/local/include)
+    link_directories(/usr/local/lib)
 
     set(myApp_ICON ${CMAKE_CURRENT_SOURCE_DIR}/../resources/icons/guzum.icns)
     set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../resources/icons/guzum.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
@@ -76,9 +74,13 @@ if(UNIX AND NOT APPLE)
     add_executable(guzum ${ALL_SOURCES})
 endif()
 
-# Use the Widgets module from Qt 5.
-target_link_libraries(guzum Qt5::Widgets Qt5::Network Qt5::Test)
-#target_link_libraries(guzum Qt5::Widgets Qt5::Svg Qt5::Xml)
+if (APPLE)
+    target_link_libraries(guzum Qt5::Widgets Qt5::Svg Qt5::Xml Qt5::Network Qt5::Test Qt5::MacExtras)
+endif()
+
+if(NOT APPLE)
+    target_link_libraries(guzum Qt5::Widgets Qt5::Svg Qt5::Xml Qt5::Network Qt5::Test)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 install(TARGETS guzum

@@ -14,7 +14,7 @@ class PrefsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    PrefsDialog(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    PrefsDialog(QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     ~PrefsDialog();
 
 public slots:

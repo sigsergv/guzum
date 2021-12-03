@@ -14,7 +14,7 @@ class PassphraseDialog : public QDialog
 {
     Q_OBJECT
 public:
-    PassphraseDialog(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    PassphraseDialog(QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
     ~PassphraseDialog();
     QString passphrase();
     void setUid(const QString & uid);
